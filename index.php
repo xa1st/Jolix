@@ -6,7 +6,7 @@
  * 
  * @package Jolix
  * @author 猫东东
- * @version 1.3.0
+ * @version 1.3.1
  * @link https://github.com/xa1st/Jolix
  * @license MIT
  */
