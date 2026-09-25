@@ -1,0 +1,231 @@
+/* * Says/Status Card Component
+ * 依赖: theme.min.css 中的 CSS 变量
+ */
+
+/* 1. 基础卡片容器 */
+.says-card {
+    /* 自动适配：白/黑 */
+    background-color: var(--bg-secondary);
+    /* 自动适配：浅灰/深灰边框 */
+    border: 1px solid var(--link-border);
+    margin: 0 auto 1rem;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* 2. 内容区域 */
+.says-card .says-content {
+    /* 自动适配：深灰/浅灰文字 */
+    color: var(--text-primary);
+    font-size: 1rem;
+    line-height: 1.625;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+/* 内容区链接与标签：使用您的橙色主色调 */
+.says-card .says-content a,
+.says-card .tag-span {
+    color: var(--primary);
+    text-decoration: none;
+    margin-right: 0.5rem;
+    transition: color 0.3s;
+}
+
+.says-card .says-content a:hover {
+    color: var(--link-hover-text-color);
+    text-decoration: underline;
+}
+
+/* 3. 图片与视频适配 */
+.says-card .says-content .thumb {
+    max-width: 100%;
+    height: auto;
+    margin: 0.8rem auto;
+    display: block;
+    border-radius: 0.375rem;
+}
+
+/* 图片预加载占位动画 - 调用 --bg-tertiary */
+.says-card .says-content img:not(.loaded):not(.emoji) {
+    width: 100%;
+    height: 150px;
+    background-color: var(--bg-tertiary);
+    border-radius: 0.5rem;
+    animation: says-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes says-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .5; }
+}
+
+/* 视频容器 (B站等) */
+.says-card .says-content .bilivideo {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 比例 */
+    margin: 1rem 0;
+    background: var(--bg-tertiary);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.says-card .says-content .bilivideo iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* 4. 底部栏 (时间、来源等) */
+.says-card .says-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--link-border);
+    padding: 1rem 0 0;
+    margin-top: 1.2rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    opacity: 0.8;
+}
+
+/* 5. 豆瓣/专题卡片样式 */
+.says-card .says-content .douban-card {
+    display: flex;
+    align-items: center;
+    position: relative;
+    background-color: var(--bg-primary); /* 使用稍深的背景色区分 */
+    border: 1px solid var(--link-border);
+    padding: 0.75rem;
+    margin: 1rem auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.says-card .says-content .douban-card .cover {
+    display: flex;
+    margin-right: 1rem;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.says-card .says-content .douban-card .cover .cover-img {
+    height: 8rem;
+    width: 6rem;
+    object-fit: cover;
+    border-radius: 0.25rem;
+}
+
+.says-card .says-content .douban-card .info {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.says-card .says-content .douban-card .info .douban-card-desc {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    margin-top: 0.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.says-card .says-content .douban-card .douban-card-type {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 0.75rem;
+    font-style: italic;
+    background-color: var(--primary); /* 橙色背景 */
+    color: #fff;
+    padding: 0.2rem 0.6rem;
+    border-bottom-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+
+/* 6. 加载更多/容器适配 */
+#says .bb-container {
+    padding: 0.75rem 0;
+    border: none;
+    background: transparent;
+    text-align: center;
+}
+
+#says .bb-container .bb-load {
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    background-color: var(--primary);
+    color: #fff;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: opacity 0.2s;
+}
+
+#says .bb-container .bb-load:hover {
+    opacity: 0.9;
+}
+
+/* 7. 评分星星样式 (保持 Base64) */
+.rating-star {
+    display: inline-block;
+    width: 75px;
+    height: 15px;
+    margin-right: 8px;
+    background-repeat: no-repeat;
+    background-position: 0 center;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEsAAAClCAYAAAAUAAAYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA5xJREFUeNrs3T9rFEEcxvG7qEQIglaCICKkin9AUEtBKxU7wS61VlYivgWj70TtNFj5BqzE7qxEWwsxKIoYn4UtluFmbm8nczvzm+/BjxyuDwNzu3uXD0+46f7LC5PA45Hm+WTYw1x2LRDc0jzTXB+wqMlsaLPutz8fDFjYZHYauAz3NBvt83XNnyUWNpn1nVm3OsHmsb3EomazzZnVXKMPNcc0xzUnNKc0Rzv/77fms+Z7O3vt9b1eU7bZrNN68l5zcolX4ofmsuZXTdnmMvyi2dR86Bmcac62P6vKrnVubpc0bxYE32nOab45N8YqsvPeDfcD4SOav4HjprPuu+H5BTt9LXDMfNbdLPfT678Fx6vKupt1o/O8+R3pkOaJ5/iktqx7z/qp+aq5q/nY+fczmheaK03Gs7D5rLtZdzSvA6/Ebc2u55j57HQB0TzW7AzkjiKzny6+2hlKNE8juMNcFqKBaIZndRlCNBBNgmx7ZkE0fbLtZkE0EA1EM17WuQwhGogGooFoss6296y52cNO+J6HLJoPaFdbsvA9zGerIxrPh85eWYgGooFoDiQbuAxp0UA0EVmdWbRo+ma1WbRoIBqIZtzsnHdDWjQQDUQD0WSbde5ZS2UhmtqJJtSEiVkXooFoIJre2VATJmZdiKZ2ogk1YSb8oVMvDeUPnSAaiCaPJkzMuhANRAPRQDQpsqEmTMy6EI11oolpwkA0EA1EcyDZmCYMRAPR+LMxTZjqiCamCQPRQDQQzehNGIgGooFoIJpVZ2OaMBBN7USTqgkD0UA0EE3vbKomDERTO9GkasKYJJpUTRiIBqKBaEZvwkA0EA1EA9GkyKZqwkA01olmrCYMRAPRQDR9LkO+0QmiKbAJUyTRjNWEgWggGohm9CYMRAPRQDQQ');
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.allstar10{background-position:0 0}
+.allstar9{background-position:0 -15px}
+.allstar8{background-position:0 -30px}
+.allstar7{background-position:0 -45px}
+.allstar6{background-position:0 -60px}
+.allstar5{background-position:0 -75px}
+.allstar4{background-position:0 -90px}
+.allstar3{background-position:0 -105px}
+.allstar2{background-position:0 -120px}
+.allstar1{background-position:0 -135px}
+.allstar0{background-position:0 -150px}
+
+.rating-num {
+   line-height: 1rem;
+}
+
+/* 豆瓣卡片封面图样式 */
+.douban-card .cover-img {
+    /* 使用你定义的变量 */
+    height: calc(var(--spacing) * 32);
+    width: calc(var(--spacing) * 24);
+    /* 确保图片不拉伸，保持比例填充 */
+    object-fit: cover;
+    /* 增强视觉效果：圆角和阴影 */
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* 解决部分浏览器下的底边空隙 */
+    display: block;
+    /* 确保即使没有 lazyload 也能平滑显示 */
+    transition: opacity 0.3s ease-in;
+}
+
+/* 适配移动端：如果在手机上图片太大，可以加个媒体查询 */
+@media (max-width: 768px) {
+    .douban-card .cover-img {
+        height: calc(var(--spacing) * 24);
+        width: calc(var(--spacing) * 18);
+    }
+}

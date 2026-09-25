@@ -1,0 +1,35 @@
+/**
+* 用于Jolix主题的图标库
+* @author 猫东东
+* @date 2025-05-16
+* @version 1.0.0
+**/
+@font-face{font-family:"fontello";src:url("./fontello.woff2") format("woff2"),url("./fontello.woff") format("woff")}
+.icon{font-family:"fontello"!important;speak:none;font-style:normal;font-weight:400;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+.icon-mail:before{content:"\f800"}
+.icon-qq:before{content:"\f801"}
+.icon-twitter:before{content:"\f802"}
+.icon-github:before{content:"\f803"}
+.icon-rss:before{content:"\f804"}
+.icon-weibo:before{content:"\f805"}
+.icon-wechat:before{content:"\f806"}
+.icon-search:before{content:"\f807"}
+.icon-chrome:before{content:"\f808"}
+.icon-firefox:before{content:"\f809"}
+.icon-opera:before{content:"\f810"}
+.icon-ie:before{content:"\f811"}
+.icon-sun:before{content:"\f812"}
+.icon-moon:before{content:"\f813"}
+.icon-auto:before{content:"\f814"}
+.icon-up:before{content:"\f815"}
+.icon-down:before{content:"\f816"}
+.icon-chat:before{content:"\f817"}
+.icon-clock:before{content:"\f818"}
+.icon-eye:before{content:"\f819"}
+.icon-comment:before{content:"\f820"}
+.icon-close:before{content:"\f821"}
+.icon-left:before{content:"\f822"}
+.icon-right:before{content:"\f823"}
+.icon-tags:before{content:"\f824"}
+.icon-cc:before{content:"\f825"}
+.icon-face:before{content:"\f826"}
