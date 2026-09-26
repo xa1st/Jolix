@@ -1,17 +1,15 @@
 <?php if (!defined('__TYPECHO_ROOT_DIR__')) exit; ?>
     <!-- 网页底部 -->
-    <footer class="bg-white dark:bg-[var(--bg-primary)] mt-4 border-t border-gray-200 dark:border-gray-600">
-        <div class="container mx-auto px-4 py-8">
-            <div class="w-full md:w-full mb-4 md:mb-0 text-center">
-                <p class="text-sm">
-                    © 2023 - <?php echo date('Y');?> <?php $this->options->title(); ?> | 
-                    POWERED BY <a href="//typecho.org" title="骄傲地使用Typecho">Typecho</a> | 
-                    THEME BY <a href="//github.com/xa1st/jolix" title="JoLix主题，版本v1.3.0，作者：猫东东">JoLix</a>
-                </p>
-                <?php if ($this->options->footerInfo): ?>
-                    <p class="text-sm mt-2"><?php echo $this->options->footerInfo; ?></p>
-                <?php endif; ?>
-            </div>
+    <footer class="bg-white dark:bg-(--bg-primary) mt-4 border-t border-gray-200 dark:border-gray-600">
+        <div class="mx-auto px-4 py-8 text-center leading-8">
+            <p class="text-sm">
+                <span class="hidden md:inline-flex">© <?php echo getCopyrightYear(); ?> <?php $this->options->title(); ?><span> | </span></span>
+                POWERED BY <a href="//typecho.org" title="骄傲地使用Typecho">Typecho</a><span> | </span>
+                THEME BY <a href="//github.com/xa1st/jolix" title="JoLix主题，版本<?php echo getThemeVersion(); ?>，作者：猫东东">JoLix</a>
+            </p>
+            <?php if ($this->options->footerInfo): ?>
+                <p class="text-sm mt-2"><?php echo $this->options->footerInfo; ?></p>
+            <?php endif; ?>
         </div>
     </footer>
     <!-- 浮动按钮组 -->

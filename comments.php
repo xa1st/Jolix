@@ -42,7 +42,7 @@ function threadedComments($comments, $options):void {
                         <button class="absolute top-0 right-0 text-sm bg-gray-100 hover:bg-gray-200 dark:text-gray-100 dark:bg-gray-600/70 rounded px-2 py-1 transition-colors"><?php $comments->reply();?></button>
                     </div>
                     <!-- 评论内容 -->
-                    <div class="comment-content text-gray-700 mt-2 mb-4 dark:text-gray-200/90">
+                    <div class="comment-content mt-2 mb-4 text-(--text-primary)">
                         <!-- 回复带上要回复人的名字，这里可能需要修改typecho主程序，也可以使用助手方法，但不推荐 -->
                         <?php $commentsAuthors = CommentsAuthorsHelper::$authorMap;?>
                         <?php if ($comments->parent && !empty($commentsAuthors[$comments->parent])):?>
@@ -66,14 +66,14 @@ function threadedComments($comments, $options):void {
     <?php if ($this->allow('comment')): ?>
         <!-- 评论框 -->
         <div class="comment-form-card">
-            <div id="<?php $this->respondId(); ?>" class="respond mt-6">
+            <div id="<?php $this->respondId(); ?>" class="respond mt-3">
                 <form method="post" action="<?php $this->commentUrl() ?>" onsubmit="document.getElementById('submit').disabled = true; return true;">
                     <?php if ($this->user->hasLogin()): ?>
-                        <span>
-                            亲爱的
+                        <div class="pb-2">
+                            <?php _e('亲爱的'); ?>
                             <a href="<?php $this->options->profileUrl(); ?>"><?php $this->user->screenName(); ?></a>,
                             <a href="<?php $this->options->logoutUrl(); ?>" title="Logout">退出 &raquo;</a>
-                        </span>
+                        </div>
                     <?php else: ?>
                         <!-- 第二行：昵称、邮箱和URL三个输入框 -->
                         <div class="block lg:flex items-center gap-4">

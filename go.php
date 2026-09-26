@@ -1,6 +1,5 @@
 <!DOCTYPE HTML>
 <html lang="zh-CN">
-
 <head>
     <!-- 基础设置 -->
     <meta charset="<?php echo $options->charset(); ?>">

@@ -9,21 +9,25 @@
 /* 2. 主题配置 (对应 v4 @theme) */
 @theme {
     --color-orange-500: oklch(70.5% .213 47.604);
-    --color-orange-600: oklch(64.6% .222 41.116);
+    --color-orange-600: oklch(72.384% 0.13703 43.657);
     --color-gray-50:    oklch(98.5% .002 247.839);
     --color-gray-100:   oklch(96.7% .003 264.542);
     --color-gray-200:   oklch(92.8% .006 264.531);
-    --color-gray-300:   oklch(87.2% .01 258.338);
-    --color-gray-400:   oklch(70.7% .022 261.325);
+    --color-gray-300:   oklch(65.5% .01 258.338);
+    --color-gray-400:   oklch(60.7% .022 261.325);
     --color-gray-500:   oklch(55.1% .027 264.364);
     --color-gray-600:   oklch(44.6% .03 256.802);
     --color-gray-700:   oklch(37.3% .034 259.733);
     --color-gray-800:   oklch(27.8% .033 256.848);
     --color-gray-900:   oklch(21% .034 264.665);
+    --color-code-1:     oklch(67.101% 0.05197 101.242);
+    --color-code-2:     oklch(28.908% 0.00003 271.152);
+    --color-code-3:     oklch(99.703% 0.00011 271.152);
     --color-white:      oklch(100% 0 0);
     --color-black:      oklch(0% 0 0);
     --color-dark-bg:    oklch(21.8% 0 0); /* 自定义深色背景色 */
     --color-dark-secondary: oklch(0% 0 0); /* 自定义深色次级背景色 */
+    
 
     /* 容器宽度 */
     --container-sm: 24rem;
@@ -47,18 +51,21 @@
         --ring-primary: var(--color-orange-500);            /* 链接相关 */
         --link-border: var(--color-gray-200);               /* 链接边框色 */
         --link-hover-text-color: var(--color-orange-500);   /* 链接悬停文本色 */
+        --code-bg: var(--color-code-3);                     /* 代码块背景色 */
     }
 
     .dark {
-        --primary: var(--color-orange-500);                 /* 主色 */
+        --primary: var(--color-orange-600);                 /* 主色 */
         --bg-primary: var(--color-dark-bg);                 /* 优化后：深色模式下背景色稍暗，减少刺眼感 */
         --bg-secondary: var(--color-dark-secondary);        /* 优化后：次级背景色也稍暗，避免过于刺眼 */
         --bg-tertiary: var(--color-gray-600);               /* 优化后：次级背景色也稍暗，避免过于刺眼 */        
         --text-primary: var(--color-gray-300);              /* 优化后：文本也稍暗，避免过于刺眼 */
         --border-menu: var(--color-gray-200);               /* 优化后：菜单边框色也稍暗，避免过于刺眼 */
-        --ring-primary: var(--color-orange-500);            /* 链接相关 */
+        --ring-primary: var(--color-orange-600);            /* 链接相关 */
         --link-border: var(--color-gray-600);               /* 优化后：深色模式下链接边框色稍暗，避免过于刺眼 */
-        --link-hover-text-color: var(--color-orange-500);   /* 链接悬停文本色 */
+        --link-hover-text-color: var(--color-orange-600);   /* 链接悬停文本色 */
+        --code-secondary: var(--color-code-1);              /* 优化后：代码块背景色稍暗，减少刺眼感 */
+        --code-bg: var(--color-code-2);                     /* 代码块背景色 */
     }
 
     body {
@@ -67,7 +74,7 @@
     /* 优化后： 继承 body 文本色，仅 hover 时变色 */
     a {
         /* 移除 dark:text-gray-200/70，让它继承 text-primary 变量 */
-        @apply text-gray-700 transition-colors duration-300; 
+        @apply text-gray-700 transition-colors duration-300 dark:text-gray-300; 
         &:hover { 
             color: var(--link-hover-text-color); 
         }
@@ -211,6 +218,39 @@
         }
     }
 
+    /* 分隔线 (Markdown 中的 ---):仿剪切线的虚线,中间一枚剪刀 */
+    hr {
+        @apply my-6 border-0 relative;
+        height: 18px;
+        background:
+            repeating-linear-gradient(to right,
+                color-mix(in oklab, var(--text-primary) 30%, transparent) 0 6px,
+                transparent 6px 12px) left center / calc(50% - 10px) 1px no-repeat,
+            repeating-linear-gradient(to right,
+                color-mix(in oklab, var(--text-primary) 30%, transparent) 0 6px,
+                transparent 6px 12px) right center / calc(50% - 10px) 1px no-repeat;
+
+        /* 中间剪刀:复用 fontello 的 .icon-cut(\f827),颜色随主题切换 */
+        &::after {
+            content: "\f827";
+            font-family: "fontello";
+            font-weight: normal;
+            font-style: normal;
+            position: absolute;
+            inset: 0;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            font-size: 16px;
+            line-height: 1;
+            color: var(--text-primary);
+            opacity: .85;
+        }
+    }
+
     /* 文章底部结束线 */
     .over::before, .over::after {
         content: " ";
@@ -223,7 +263,7 @@
             @apply w-full px-3 py-2 bg-(--bg-primary) border border-gray-200 dark:border-gray-600/50 
                    text-sm focus:outline-none focus:ring-1 focus:ring-(--ring-primary) focus:border-(--ring-primary);
         }
-        .comments-submit { @apply px-4 py-2 text-sm bg-orange-500 text-white; }
+        .comments-submit { @apply px-4 py-2 text-sm bg-(--primary) text-white; }
         .comments-cancel { @apply px-4 py-2 text-sm; }
     }
 
@@ -287,7 +327,7 @@
     .post-content {
         @apply my-2 lg:my-4 py-1 lg:py-4 leading-9 text-wrap border-y border-gray-200 dark:border-gray-600 wrap-break-word;
         a {
-            @apply text-orange-500/80 transition-colors duration-300 hover:text-orange-600;
+            @apply text-(--link-hover-text-color) transition-colors duration-300 hover:text-(--link-hover-text-color);
         }
 
         /* 新增：为所有标题添加主色 # 符号 */
@@ -299,7 +339,32 @@
         h2, h3 {
            @apply mt-4 mb-2;
         }
-        
+
+        /* 引用：不做框、不加竖线，靠淡底色、略淡文字和左上角文楷大引号区分 */
+        blockquote {
+            @apply relative my-6 rounded-lg px-4 py-2;
+            color: color-mix(in oklab, var(--text-primary) 85%, transparent);
+            background-color: var(--code-bg);
+            /* shadow-lg 向下偏 10px，上沿几乎没有；改成四周均匀的浅阴影 */
+            box-shadow: 0 0 12px color-mix(in oklab, var(--text-primary) 12%, transparent);
+
+            p { @apply my-1 leading-8; }
+
+            /* 嵌套引用：不再叠一层底色，只再缩进一截 */
+            blockquote {
+                @apply my-2 px-3 py-0;
+                background-color: transparent;
+            }
+        }
+        /* 只给最外层引用加引号，避免嵌套时引号叠成一排 */
+        blockquote:not(blockquote blockquote)::before {
+            content: "\201C";
+            font-family: inherit;
+            @apply absolute top-1 left-1 leading-none pointer-events-none select-none;
+            font-size: 3rem;
+            color: var(--primary);
+        }
+
         @supports selector(:has(*)) {
             /* 图片网格系统 (使用原生 CSS Grid 语法处理复杂 nth-child 逻辑) */
             p:has(img) {
@@ -336,7 +401,7 @@
             /* 暗色下压暗图片,降低刺眼感 */
             &:where(.dark, .dark *) {
                 /* 优化后的骨架屏动画颜色，降低视觉干扰 */
-                filter: brightness(0.85) saturate(0.9);
+                filter: brightness(0.65) saturate(0.9);
                 /* 优化后的骨架屏动画颜色，降低视觉干扰 */
                 background: linear-gradient(90deg, #2a2a2a 25%, #333333 50%, #2a2a2a 75%);
             }  
@@ -365,7 +430,7 @@
         /* 覆盖插件和全局:pre 内滚动条跟文字色,不用主色 */
         &::-webkit-scrollbar-thumb {
            background-color: currentColor;
-           border: 2px solid var(--bg-primary);   /* 保留原来的内缩胶囊外观 */
+           border: 1px solid var(--bg-primary);   /* 保留原来的内缩胶囊外观 */
            border-radius: 10px;
         }
         &::-webkit-scrollbar-track {
@@ -374,8 +439,16 @@
         /* 支持 Firefox */
         scrollbar-color: currentColor transparent;
         /* 优化后的代码块字体样式：增加行高，改善可读性 */
-        code.hljs{
+        code.hljs {
             @apply leading-relaxed;
+        }
+        /* hljs 自带 .hljs { color }，用更高优先级只覆盖底色，token 颜色仍由 hljs 控制 */
+        :where(.dark, .dark *) & code.hljs {
+            color: var(--color-gray-300)!important;
+        }
+        /* 优化后的代码块注释颜色：在深色模式下使用更柔和的灰色，减少刺眼感 */
+        :where(.dark, .dark *) & code.hljs .hljs-comment, code.hljs .hljs-quote {
+            color: var(--code-secondary)!important;
         }
     }
 
@@ -387,6 +460,7 @@
     pre:hover .code-copy-btn {
         @apply opacity-100;
     }
+
 }
 /* 5. 工具层 */
 @layer utilities{

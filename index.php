@@ -6,9 +6,9 @@
  * 
  * @package Jolix
  * @author 猫东东
- * @version 1.3.1
+ * @version 1.3.3
  * @link https://github.com/xa1st/Jolix
- * @license MIT
+ * @license Mulan PSL v2
  */
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 $this->need('header.php');

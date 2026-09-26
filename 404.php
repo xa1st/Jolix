@@ -15,7 +15,7 @@ $this->need('header.php');
         <!-- 标题 -->
         <h1 class="text-3xl sm:text-4xl mb-4 font-bold dark:text-gray-200/70">页面走丢了喵~</h1>
         <!-- 副标题 -->
-        <p class="text-lg text-gray-600 dark:text-gray-200/50 mb-8 mt-6 leading-8">这只页面可能跟猫东东一样爱捉迷藏</p>
+        <p class="text-lg text-gray-600 dark:text-gray-200/50 mb-8 mt-6 leading-8">这只页面可能跟<?php echo $this->author->screenName; ?>一样爱捉迷藏</p>
         <!-- 按钮组 -->
         <div class="px-8 mb-6 box-border">
             <a href="/" class="bg-orange-500 text-white hover:shadow-md py-2 w-full block rounded-md text-base font-semibold text-center">回到主页</a>
