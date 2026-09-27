@@ -10,16 +10,6 @@ use Typecho\Widget\Helper\Form\Element\Textarea;
  * Jolix主题功能文件
  */
 
-/**
- * 定义几个常量用于配合猫缓存插件
- * 这些常量在主题中并没有使用，但可以用于缓存插件
- */
-const SIDER_CACHE_KEY = 'siderCacheData';       // 侧边栏缓存键
-const SIDER_CACHE_TIME = 3600;                  // 侧边栏缓存时间
-const ARCHIVES_CACHE_KEY = 'archivesCacheData'; // 归档缓存键
-const ARCHIVES_CACHE_TIME = 60 * 60 * 24 * 7;   // 归档缓存时间 7天
-
-
 /** 注册主题自定义字段 */
 function themeConfig($form) {
     // 网页favicon地址
@@ -81,12 +71,16 @@ function getCategoryCount():int {
  * @return string HTML格式的归档列表
  */
 function getArchivesList():string {
-    // 尝试从缓存获取
-    $archives = cacheGet(ARCHIVES_CACHE_KEY);
-    if ($archives !== null) return $archives;
+    // 定义缓存键
+    $cacheKey = 'archivesList';
+    // 判定插件是否存在
+    $isCachePluginExists = isCachePluginExists($cacheKey);
+    // 如果 MddCache 插件存在，则使用缓存
+    if ($isCachePluginExists && ($archives = cacheGet($cacheKey)) !== null) return (array)$archives;
+    // 初始化归档数组
+    $archives = [];
     // 获取当前文章数据，前100个
     $posts = Widget::widget('Widget_Contents_Post_Recent', 'pageSize=100')->to($posts);
-    $archives = [];
     // 遍历文章
     while ($posts->next()) {
         $date = $posts->date; // 获取文章日期
@@ -109,7 +103,7 @@ function getArchivesList():string {
         $content .= '</div>'; // 结束时间线
     }
     // 写入缓存
-    cacheSet(ARCHIVES_CACHE_KEY, $content, ARCHIVES_CACHE_TIME);
+    if ($isCachePluginExists) cacheSet($cacheKey, $content, 60 * 60 * 24 * 30); // 缓存一个月，直到主动删除
     // 返回归档内容
     return $content;
 }
@@ -163,10 +157,12 @@ function getSocialLinks() {
  * @return array 包含分类、评论、标签的数组
  */
 function getSidebarData() {
-    // 尝试从缓存获取
-    $data = cacheGet(SIDER_CACHE_KEY);
-    // 如果缓存命中，则直接返回缓存数据
-    if ($data !== null) return $data;
+    // 定义缓存键
+    $cacheKey = 'siderData';
+    // 判定插件是否存在
+    $isCachePluginExists = isCachePluginExists($cacheKey);
+    // 如果 MddCache 插件存在，则使用缓存
+    if ($isCachePluginExists && ($siderdata = cacheGet($cacheKey)) !== null) return (array)$siderdata;
     // 查询分类
     $categories = getCategoriesList();
     // 查询最新评论
@@ -176,7 +172,7 @@ function getSidebarData() {
     // 最终结果
     $data = ['categories' => $categories, 'comments' => $comments, 'tags' => $tags];
     // 写入缓存
-    cacheSet(SIDER_CACHE_KEY, $data, SIDER_CACHE_TIME);
+    if ($isCachePluginExists) cacheSet($cacheKey, $data, 60 * 60 * 24 * 7); // 缓存一周，直到主动删除
     // 返回结果
     return $data;
 }
@@ -268,10 +264,9 @@ function getCommentCoidAuthorMapByCid($cid) {
     // 构造查询：选择 coid 和 author 字段
     // 筛选条件：WHERE cid = $cid
     // Typecho 会自动处理 table.comments 的表前缀
-    $query = $db->select('coid', 'author')->from('table.comments')->where('cid = ?', $cid);
     // 执行查询并获取所有结果
     // 注意：如果数据库中没有评论，这里会返回一个空数组
-    $comments = $db->fetchAll($query);
+    $comments = $db->fetchAll($db->select('coid', 'author')->from('table.comments')->where('cid = ?', $cid));
     // 准备返回的关联数组
     $coidAuthorMap = [];
     // 遍历结果，构建 ["coid" => "author"] 格式的数组
@@ -323,6 +318,7 @@ function getCopyrightYear() {
 
 /**
  * 获取当前主题版本号
+ * @return string 主题版本号，格式为 vX.X.X
  */
 function getThemeVersion() {
     // 静态变量缓存版本号，避免重复读取文件
@@ -341,12 +337,19 @@ function getThemeVersion() {
 
 /**
  * 缓存读取
+ * 如果 MddCache 插件存在，则使用缓存，否则不缓存
+ * 
+ * @param string $key 缓存键
+ * @param mixed $default 缓存默认值
+ * @return mixed 返回缓存值，如果缓存不存在则返回默认值
+ * 
  */
 function cacheGet($key, $default = null) {
+    // 如果 MddCache 插件存在，则使用缓存
     if (class_exists('\TypechoPlugin\MddCache\Plugin')) {
         try {
-            $cache = \TypechoPlugin\MddCache\Plugin::getCacheInstance();
-            return $cache->get($key, $default);
+            // 获取缓存实例并获取缓存
+            return \TypechoPlugin\MddCache\Plugin::getCacheInstance()->get($key, $default);
         } catch (\Exception $e) {
             return $default;
         }
@@ -357,18 +360,41 @@ function cacheGet($key, $default = null) {
 
 /**
  * 缓存写入
+ * 
+ * @param string $key 缓存键
+ * @param mixed $value 缓存值
+ * @param int $expire 缓存过期时间，单位为秒，默认为36000秒（10小时）
+ * @return bool 返回缓存写入是否成功
+ * 
  */
 function cacheSet($key, $value, $expire = 36000) {
+    // 如果 MddCache 插件存在，则使用缓存
     if (class_exists('\TypechoPlugin\MddCache\Plugin')) {
         try {
-            $cache = \TypechoPlugin\MddCache\Plugin::getCacheInstance();
-            return $cache->set($key, $value, $expire);
+            // 获取缓存实例并设置缓存
+            return \TypechoPlugin\MddCache\Plugin::getCacheInstance()->set($key, $value, $expire);
         } catch (\Exception $e) {
             return false;
         }
     }
     // 没有插件就不缓存
     return false;
+}
+
+/** 
+ * 缓存插件是否存在 
+ * 
+ * @param string 变量名称，用于判断缓静态变量是否存在
+ * @return bool
+ * 
+ */
+function isCachePluginExists($name = ''):bool {
+    // 判断插件是否存在
+    $isExists = class_exists('\TypechoPlugin\MddCache\Plugin');
+    // 如果指定了变量名称，则判断该变量是否存在
+    if ($name) $isExists = $isExists && isset(\TypechoPlugin\MddCache\Plugin::$$name);
+    // 返回结果
+    return $isExists;
 }
 
 /**
