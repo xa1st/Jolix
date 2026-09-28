@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.3.0-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.3.4-orange.svg)
 
 </div>
 
@@ -154,12 +154,12 @@ Jolix/
 ├── archives.php        # 归档页面模板
 ├── tags.php            # 标签云页面模板
 ├── links.php           # 友链页面模板
-├── says.php            # 说说页面模板
 ├── menu.php            # 左侧栏
 ├── sider.php           # 右侧栏
 ├── header.php          # 头部
 ├── footer.php          # 底部
 ├── functions.php       # 主题功能与配置
+├── CHANGELOG.md        # 更新日志
 ├── css/                # 样式产物
 ├── src/tailwind.css    # Tailwind 源样式
 ├── js/                 # 主题 JS
@@ -174,19 +174,14 @@ Jolix/
 在 `src/tailwind.css` 的 `@theme` 块中修改 `--color-orange-500` / `--color-orange-600` 为任意 oklch 或 hex 颜色,重新构建即可;`:root` 与 `.dark` 中的 `--primary` 引用会自动跟随。
 
 **Q: 如何关闭 CDN,使用本地资源?**
-后台主题设置将「全站公共库CDN地址」留空即可回退到本地 `libs/` 目录(需自行放置对应库文件)。comments.php 中的 marked/md5 等依赖同样走 CDN 变量。
+后台主题设置将「全站公共库CDN地址」留空即可回退到主题目录下的 `lib/`(需自行放置对应库文件,目录结构与 CDN 保持一致)。评论头像预览使用的 md5 库为主题自带的 `js/md5.min.js`,不受该设置影响。
 
 **Q: 缓存数据不更新怎么办?**
-卸载 MddCache 插件或清空其缓存目录;归档(`archivesList2`)、侧栏(`sidebarData`)、标签(`tagsList`)、评论映射(`CommentsList_cid`)均有独立缓存键。
+卸载 MddCache 插件或清空其缓存目录;归档(`archivesList`)、侧栏(`siderBar`)、标签(`tagsList`)、评论映射(`CommentsList_cid`)均有独立缓存键。从 1.3.4 起侧栏缓存键由 `siderData` 改为 `siderBar`,旧缓存会自动失效。
 
 ## 更新日志
 
-### v1.3.0
-- 重构为 Tailwind CSS v4,组件/工具层全面重写
-- 新增 AI 课代表总结卡片(`ai_comment` 字段)
-- 新增 Fancybox 5 图片灯箱与图片网格排版
-- 评论系统增强:UA 解析、@回复、头像预览
-- 归档/侧栏/标签缓存策略优化
+详见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 版权
 
