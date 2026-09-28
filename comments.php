@@ -34,8 +34,8 @@ function threadedComments($comments, $options):void {
                 <div class="flex-1 comments_info">
                     <!-- 评论者信息 -->
                     <div class="comments_head flex items-center relative">
-                        <a href="<?php echo $comments->url ?? 'javascript:void(0)';?>" class="font-bold" target="_blank" rel="external nofollow" title="点击访问<?php echo $comments->author;?>的主页">
-                            <?php echo $comments->author;?>
+                        <a href="<?php echo htmlspecialchars($comments->url) ?? 'javascript:void(0)';?>" class="font-bold" target="_blank" rel="external nofollow" title="点击访问<?php echo $comments->author;?>的主页">
+                            <?php echo htmlspecialchars($comments->author);?>
                         </a>
                         <span class="text-xs ml-3"><?php echo date('Y-m-d', $comments->created);?></span>
                         <!-- 回复按钮 - 右上角 -->
@@ -121,7 +121,7 @@ function threadedComments($comments, $options):void {
 </div>
 <?php if ($this->allow('comment')): ?>
     <!-- 评论事件 -->
-    <script src="//mirrors.sustech.edu.cn/cdnjs/ajax/libs/blueimp-md5/2.18.0/js/md5.min.js"></script>
+    <script src="/usr/themes/Jolix/js/md5.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 获取当前邮件
@@ -138,7 +138,7 @@ function threadedComments($comments, $options):void {
                         // 用正则判定当前值是否为邮件地址
                         if (!/^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/.test(mail.value)) return;
                         // 如果不是，则求其md5
-                        const avatar_md5 = md5(mail.value);
+                        const avatar_md5 = md5(mail.value.trim().toLowerCase());
                         // 然后把头像换成邮件的md5
                         document.getElementById('cavatar').src = `<?php echo __TYPECHO_GRAVATAR_PREFIX__;?>${avatar_md5}?d=mp&s=40`;
                     }, 300); // 延迟300毫秒执行

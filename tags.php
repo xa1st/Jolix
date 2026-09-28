@@ -17,15 +17,17 @@ $this->need('header.php');
             <h2 class="mb-6 pb-2 border-b border-gray-200 text-left dark:border-gray-600/70"># 标签</h2>
             <?php if (!empty($this->text)): ?><div class="mb-6 leading-8 text-wrap"><?php $this->content(); ?></div><?php endif;?>
             <div class="tags">
-                <?php 
-                    $tagsList = cacheGet('tagsList');
+                <?php
+                    // 缓存标签列表，减少数据库查询
+                    $tagsList = (array)cacheGet('tagsList');
+                    // 缓存不存在，则重新获取
                     if (!$tagsList) {
                         $tags = $this->widget('Widget_Metas_Tag_Cloud', 'ignoreZeroCount=1');
                         while($tags->next()) {
                             $tagsList[] = ['name' => $tags->name, 'count' => $tags->count, 'permalink' => $tags->permalink];
                         }
                     }
-                    // 无限时间，更新文章的时候自动更新缓存
+                    // 30天，更新文章的时候自动更新缓存
                     cacheSet('tagsList', $tagsList);
                 ?>
                 <?php foreach ($tagsList as $tag): ?>

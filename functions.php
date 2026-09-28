@@ -60,6 +60,34 @@ function getCategoryCount():int {
 }
 
 /**
+ * 获取首页左侧社交链接
+ * 
+ * @return array 社交链接数组
+ */
+function getSocialLinks(): array {
+    // 获取主题配置
+    $option = Widget::widget('Widget_Options')->socialLinks ?? '';
+    // 如果配置项为空，则返回空数组
+    if (!is_string($option) || trim($option) === '') return [];
+    // 将配置项按行分割，并过滤掉空行
+    return array_values(
+        array_filter(
+            array_map(
+                function ($line) {
+                    // 分割行
+                    $parts = array_map('trim', explode('|', trim($line), 3));
+                    // 如果分割后的数组长度小于3，或者第一项或第二项为空，则返回null
+                    if (count($parts) < 3 || $parts[0] === '' || $parts[1] === '') return null;
+                    // 返回一个包含名称、链接和图标的数组
+                    return ['name' => $parts[0], 'url' => $parts[1], 'icon' => $parts[2]];
+                }, 
+                preg_split('/\r\n|\r|\n/', $option) // 按行分割
+            )
+        )
+    );
+}
+
+/**
  * 获取博客文章归档
  * 
  * 该函数首先尝试从缓存中获取归档数据，如果缓存未命中或失效，则从数据库中查询最近的200篇文章，
@@ -73,10 +101,10 @@ function getCategoryCount():int {
 function getArchivesList():string {
     // 定义缓存键
     $cacheKey = 'archivesList';
-    // 判定插件是否存在
-    $isCachePluginExists = isCachePluginExists($cacheKey);
+    // 要输出的归档内容
+    $content = (string)cacheGet($cacheKey); 
     // 如果 MddCache 插件存在，则使用缓存
-    if ($isCachePluginExists && ($archives = cacheGet($cacheKey)) !== null) return (array)$archives;
+    if ($content) return (string)$content;
     // 初始化归档数组
     $archives = [];
     // 获取当前文章数据，前100个
@@ -88,8 +116,6 @@ function getArchivesList():string {
         $monthDay = $date->format('m/d'); // 获取月份和日期
         $archives[$year][$monthDay][] = clone $posts; // 将文章添加到对应的年份和月份
     }
-    // 要输出的归档内容
-    $content = ''; 
     // 输出归档
     foreach ($archives as $year => $items) {
         // 开头
@@ -103,66 +129,22 @@ function getArchivesList():string {
         $content .= '</div>'; // 结束时间线
     }
     // 写入缓存
-    if ($isCachePluginExists) cacheSet($cacheKey, $content, 60 * 60 * 24 * 30); // 缓存一个月，直到主动删除
+    cacheSet($cacheKey, $content, 60 * 60 * 24 * 30); // 缓存一个月，直到主动删除
     // 返回归档内容
     return $content;
-}
-
-/* *
- * 获取CDN
- * @param bool $render 是否输出
- * @return string
- */
-function getCDN($render = true) {
-    // 获取主题配置
-    $options = Widget::widget('Widget_Options');
-    //  获取CDN
-    $res = !empty($options->siteCdn) ? $options->siteCdn : $options->themeUrl . '/lib/';
-    // 判定是否直接输出
-    if (!$render) return $res;
-    // 否则直接输出
-    echo $res;
-}
-
-/**
- * 获取社交链接
- * @return array 社交链接数组
- */
-function getSocialLinks() {
-    // 获取主题配置
-    $options = Widget::widget('Widget_Options');
-    // 定义容器
-    $links = [];
-    // 如果社交链接为空，则返回空数组
-    if (empty($options->socialLinks)) return $links;
-    // 将社交链接按行分割
-    foreach (explode("\n", $options->socialLinks) as $line) {
-        // 去除行首行尾的空白字符
-        $line = trim($line);
-        // 如果行为空，则跳过
-        if (empty($line)) continue;
-        // 将每行按 | 分割为名称、链接和图标
-        $parts = (array)explode('|', (string)$line);
-        // 如果分割后的数组长度为3，则添加到链接数组中
-        if (count($parts) !== 3) continue;
-        // 添加到链接数组中
-        $links[] = ['name' => trim($parts[0]), 'url' => trim($parts[1]), 'icon' => trim($parts[2])];
-    }
-    // 返回社交链接数组
-    return $links;
 }
 
 /**
  * 获取侧边栏数据（带缓存）
  * @return array 包含分类、评论、标签的数组
  */
-function getSidebarData() {
+function getSidebarData():array {
     // 定义缓存键
-    $cacheKey = 'siderData';
+    $cacheKey = 'siderBar';
     // 判定插件是否存在
-    $isCachePluginExists = isCachePluginExists($cacheKey);
+    $siderdata = cacheGet($cacheKey);
     // 如果 MddCache 插件存在，则使用缓存
-    if ($isCachePluginExists && ($siderdata = cacheGet($cacheKey)) !== null) return (array)$siderdata;
+    if ($siderdata) return (array)$siderdata;
     // 查询分类
     $categories = getCategoriesList();
     // 查询最新评论
@@ -172,7 +154,7 @@ function getSidebarData() {
     // 最终结果
     $data = ['categories' => $categories, 'comments' => $comments, 'tags' => $tags];
     // 写入缓存
-    if ($isCachePluginExists) cacheSet($cacheKey, $data, 60 * 60 * 24 * 7); // 缓存一周，直到主动删除
+    cacheSet($cacheKey, $data, 60 * 60 * 24 * 7); // 缓存一周，直到主动删除
     // 返回结果
     return $data;
 }
@@ -251,40 +233,36 @@ function getCommentsList():array {
  * @param int $cid 文章 ID
  * @return array 格式为 ["coid" => "author"] 的数组
  */
-function getCommentCoidAuthorMapByCid($cid) {
+function getCommentCoidAuthorMapByCid(int $cid):array {
     // 确保 cid 是有效的整数
     $cid = intval($cid);
-    if ($cid <= 0)  return [];
+    // 如果 cid 小于等于 0，则返回空数组
+    if ($cid < 1)  return [];
     // 缓存缓存存在，则直接返回
     $cacheKey = 'CommentsList_' . $cid;
+    // 定义容器
+    $coidAuthorMap = [];
     // 如果缓存中存在，则直接返回
-    if ($cached = cacheGet($cacheKey)) return $cached;
-    // 获取数据库连接，兼容旧版本
+    $coidAuthorMap = (array)cacheGet($cacheKey);
+    // 如果缓存中存在，则直接返回
+    if (!empty($coidAuthorMap)) return $coidAuthorMap;
+    // 初始化数据库
     $db = \Typecho\Db::get();
-    // 构造查询：选择 coid 和 author 字段
-    // 筛选条件：WHERE cid = $cid
-    // Typecho 会自动处理 table.comments 的表前缀
-    // 执行查询并获取所有结果
     // 注意：如果数据库中没有评论，这里会返回一个空数组
     $comments = $db->fetchAll($db->select('coid', 'author')->from('table.comments')->where('cid = ?', $cid));
-    // 准备返回的关联数组
-    $coidAuthorMap = [];
     // 遍历结果，构建 ["coid" => "author"] 格式的数组
-    foreach ($comments as $comment) {
-        // 使用 coid 作为数组的键，author 作为值
-        // coid 是唯一的，所以不会有键覆盖问题
-        $coidAuthorMap[$comment['coid']] = $comment['author'];
-    }
+    foreach ($comments as $comment) $coidAuthorMap[$comment['coid']] = $comment['author'];
     // 写入缓存
     cacheSet($cacheKey, $coidAuthorMap);
     // 返回结果
     return $coidAuthorMap;
 }
+
 /** 
  * 获取分类图标列表
  * @return array
 */
-function getCategoryIcons() {
+function getCategoryIcons():array {
     // 获取主题配置
     $options = Widget::widget('Widget_Options');
     // 获取分类图标
@@ -301,6 +279,7 @@ function getCategoryIcons() {
 function getCopyrightYear() {
     // 每次获取很麻烦
     static $year = null;
+    // 如果已经获取过年份，则直接返回
     if ($year !== null) return $year;
     // 获取站点配置
     $options = Widget::widget('Widget_Options');
@@ -335,6 +314,24 @@ function getThemeVersion() {
     return $version;
 }
 
+/** 
+ * 缓存插件是否存在 
+ * 
+ * @param string 变量名称，用于判断缓静态变量是否存在
+ * @return bool
+ * 
+ */
+function isCachePluginExists():bool {
+    // 静态变量缓存插件是否存在
+    static $exists = null;
+    // 如果已经判断过插件是否存在，则直接返回结果
+    if ($exists !== null) return $exists;
+    // 判断插件是否存在
+    $exists = class_exists('\TypechoPlugin\MddCache\Plugin');
+    // 返回结果
+    return $exists;
+}
+
 /**
  * 缓存读取
  * 如果 MddCache 插件存在，则使用缓存，否则不缓存
@@ -345,17 +342,10 @@ function getThemeVersion() {
  * 
  */
 function cacheGet($key, $default = null) {
+    // 如果缓存键为空，则直接返回默认值
+    if (empty($key)) return $default;
     // 如果 MddCache 插件存在，则使用缓存
-    if (class_exists('\TypechoPlugin\MddCache\Plugin')) {
-        try {
-            // 获取缓存实例并获取缓存
-            return \TypechoPlugin\MddCache\Plugin::getCacheInstance()->get($key, $default);
-        } catch (\Exception $e) {
-            return $default;
-        }
-    }
-    // 没有插件就不缓存
-    return $default;
+    return isCachePluginExists() ? \TypechoPlugin\MddCache\Plugin::getCacheInstance()->get($key, $default) : $default;
 }
 
 /**
@@ -363,38 +353,39 @@ function cacheGet($key, $default = null) {
  * 
  * @param string $key 缓存键
  * @param mixed $value 缓存值
- * @param int $expire 缓存过期时间，单位为秒，默认为36000秒（10小时）
+ * @param int $expire 缓存过期时间，单位为秒，默认为30天
  * @return bool 返回缓存写入是否成功
  * 
  */
-function cacheSet($key, $value, $expire = 36000) {
+function cacheSet($key, $value, $expire = 60 * 60 * 24 * 30):bool {
     // 如果 MddCache 插件存在，则使用缓存
-    if (class_exists('\TypechoPlugin\MddCache\Plugin')) {
-        try {
-            // 获取缓存实例并设置缓存
-            return \TypechoPlugin\MddCache\Plugin::getCacheInstance()->set($key, $value, $expire);
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-    // 没有插件就不缓存
-    return false;
+    return isCachePluginExists() ? \TypechoPlugin\MddCache\Plugin::getCacheInstance()->set($key, $value, $expire) : false;
 }
 
-/** 
- * 缓存插件是否存在 
- * 
- * @param string 变量名称，用于判断缓静态变量是否存在
+/**
+ * 判断插件是否存在
+ * @param string $pluginName 插件名称
  * @return bool
- * 
  */
-function isCachePluginExists($name = ''):bool {
+function isPluginExists($pluginName) {
     // 判断插件是否存在
-    $isExists = class_exists('\TypechoPlugin\MddCache\Plugin');
-    // 如果指定了变量名称，则判断该变量是否存在
-    if ($name) $isExists = $isExists && isset(\TypechoPlugin\MddCache\Plugin::$$name);
-    // 返回结果
-    return $isExists;
+    return class_exists('\TypechoPlugin\MddCache\Plugin');
+}
+
+/* *
+ * 获取CDN
+ * @param bool $render 是否输出
+ * @return string
+ */
+function getCDN($render = true) {
+    // 获取主题配置
+    $options = Widget::widget('Widget_Options');
+    //  获取CDN
+    $res = !empty($options->siteCdn) ? $options->siteCdn : $options->themeUrl . '/lib/';
+    // 判定是否直接输出
+    if (!$render) return $res;
+    // 否则直接输出
+    echo $res;
 }
 
 /**
