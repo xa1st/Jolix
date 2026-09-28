@@ -6,7 +6,7 @@
  * 
  * @package Jolix
  * @author 猫东东
- * @version 1.3.4
+ * @version 1.4.0
  * @link https://github.com/xa1st/Jolix
  * @license Mulan PSL v2
  */

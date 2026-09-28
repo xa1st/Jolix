@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.3.4-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.0-orange.svg)
 
 </div>
 
@@ -71,6 +71,12 @@
 | 社交链接 | 每行一条:`名称\|链接\|图标类名`,图标为内置 fontello 图标 |
 | 网页底部信息 | 页脚自定义内容,支持 HTML |
 | 统计代码 | 底部统计代码,如百度统计 |
+| 侧边栏顺序 | 用 `\|` 分隔模块名,按顺序从上到下渲染,可选 `comments`(最新评论)、`tags`(标签云)、`readers`(读者墙)、`posts`(最近文章)、`links`(友情链接),未填写的模块不显示 |
+| 侧边栏最新评论条数 | 默认 5 条 |
+| 侧边栏标签云条数 | 默认 20 条 |
+| 侧边栏读者墙条数 | 默认 10 条 |
+| 侧边栏最近文章条数 | 默认 10 条 |
+| 侧边栏友情链接条数 | 默认 10 条,数据取自 slug 为 `links` 的友情链接页面 |
 
 **社交图标类名**(内置 fontello 图标库):
 
@@ -155,7 +161,8 @@ Jolix/
 ├── tags.php            # 标签云页面模板
 ├── links.php           # 友链页面模板
 ├── menu.php            # 左侧栏
-├── sider.php           # 右侧栏
+├── sider.php           # 右侧栏(搜索、分类固定,其余模块按配置加载)
+├── sider/              # 侧边栏模块:comments、tags、readers、posts、links
 ├── header.php          # 头部
 ├── footer.php          # 底部
 ├── functions.php       # 主题功能与配置

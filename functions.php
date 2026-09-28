@@ -42,23 +42,45 @@ function themeConfig($form) {
     // 统计信息
     $statistics = new Textarea('statistics', null, null, _t('统计代码'), _t('填写网页底部的统计代码，如百度统计代码'));
     $form->addInput($statistics);
+    // 边栏布局设置
+    $sidebarLayout = new Text('sidebarLayout', null, 'comments|tags|readers|posts|links', _t('侧边栏顺序'), _t('填写侧边栏排序，可选：comments, tags, readers, posts, links，按顺序排列，用|分隔，会从上往下'));
+    $form->addInput($sidebarLayout);
     // 边栏评论条数
-    $commentCount = new Text('commentCount', null, '5', _t('侧边栏最新评论条数'), _t('填写侧边栏显示的最新评论条数，默认为5'));
+    $commentCount = new Text('commentCount', null, '5', _t('侧边栏最新评配置'), _t('填写侧边栏显示的最新评论条数，默认5条'));
     $form->addInput($commentCount);
-    // 标签云条数
-    $tagCount = new Text('tagCount', null, '20', _t('侧边栏标签云条数'), _t('填写侧边栏显示的标签云条数，默认为20'));
-    $form->addInput($tagCount);
+    // 边栏标签云条数
+    $tagCloud = new Text('tagCloud', null, '20', _t('侧边栏标签云配置'), _t('填写侧边栏显示的标签云条数，默认为20条'));
+    $form->addInput($tagCloud);
+    // 边栏读者墙条数
+    $readers = new Text('readers', null, '10', _t('侧边栏读者墙条数'), _t('填写侧边栏显示的读者墙条数，默认为10条'));
+    $form->addInput($readers);
+    // 边栏最近文章条数
+    $recentPosts = new Text('recentPosts', null, '10', _t('侧边栏最近文章条数'), _t('填写侧边栏显示的最近文章条数，默认为10条'));
+    $form->addInput($recentPosts);
+    // 边栏友情链接条数
+    $links = new Text('links', null, '10', _t('侧边栏友情链接条数'), _t('填写侧边栏显示的友情链接条数，默认为10条'));
+    $form->addInput($links);
+    
 }
 
 /**
- * 获取分类数量
+ * 获取分类图标
+ * @param string $category 分类名称
+ * @return string 分类图标
+ */
+function getCategoryIcon(string $category):string {
+    $categoryIcon = Widget::widget('Widget_Options')->categoryIcon ?? '';
+    $categoryIcon = explode('|', $categoryIcon);
+}
+
+/**
+ * 用于左侧的分类数量
  * @return int 分类数量
  */
 function getCategoryCount():int {
     $db = \Typecho\Db::get();
     return (int)$db->fetchObject($db->select(array('COUNT(mid)' => 'num'))->from('table.metas')->where('type = ?', 'category'))->num;
 }
-
 /**
  * 获取首页左侧社交链接
  * 
@@ -145,8 +167,6 @@ function getSidebarData():array {
     $siderdata = cacheGet($cacheKey);
     // 如果 MddCache 插件存在，则使用缓存
     if ($siderdata) return (array)$siderdata;
-    // 查询分类
-    $categories = getCategoriesList();
     // 查询最新评论
     $comments = getCommentsList();
     // 查询标签云
@@ -159,29 +179,19 @@ function getSidebarData():array {
     return $data;
 }
 
-/** 
- * 查询分类列表，用于侧边栏显示
- * @return array 分类数组
- */
-function getCategoriesList():array {
-    // 查询分类列表
-    $categories = [];
-    // 使用 Typecho 的 Widget 获取分类列表
-    $categoryWidget = Widget::widget('Widget_Metas_Category_List');
-    // 遍历分类列表，将每个分类的 permalink、name、slug 和 count 添加到数组中
-    while ($categoryWidget->next()) {
-        // 将分类数据添加到数组中
-        $categories[] = ['permalink' => $categoryWidget->permalink, 'name' => $categoryWidget->name, 'slug' => $categoryWidget->slug, 'count' => $categoryWidget->count];
-    }
-    // 返回分类数组
-    return $categories;
-}
-
 /**
  * 查询标签云，用于侧边栏显示
  * @return array 标签云数组
  */
 function getTagsCloud():array {
+    // 缓存键
+    $cacheKey = 'tagsCloud';
+    // 查询标签云
+    $tagsLists = [];
+    // 从缓存中拿数据
+    $tagsLists = cacheGet($cacheKey);
+    // 如果 MddCache 插件存在，则使用缓存
+    if ($tagsLists) return (array)$tagsLists;
     // 查询标签云
     $tagsLists = [];
     // 获取主题配置
@@ -197,6 +207,8 @@ function getTagsCloud():array {
         $tagsLists[] = ['permalink' => $tagWidget->permalink, 'name' => $tagWidget->name, 'count' => $tagWidget->count];
         $i++;
     }
+    // 写入缓存，直接缓存30天，直到主动删除
+    cacheSet($cacheKey, $tagsLists);
     // 返回标签云数组
     return $tagsLists;
 }
@@ -204,7 +216,9 @@ function getTagsCloud():array {
 /**
  * 查询最新评论，用于侧边栏显示
  */
-function getCommentsList():array {
+function getComments():array {
+    // 缓存键
+    $cacheKey = 'commentsList';
     // 查询最新评论
     $comments = [];
     // 使用 Typecho 的 Widget 获取最新评论，限制为5条，忽略作者自己的评论
@@ -225,6 +239,182 @@ function getCommentsList():array {
     }
     // 返回最新评论数组
     return $comments;
+}
+
+/**
+ * 读者墙
+ * 统计已通过的读者评论，按邮箱合并，排除站长本人，按评论数从高到低
+ * 
+ * @param int $limit 显示人数，默认 30
+ * @return array 每项包含 author、url、avatar、count
+ */
+function getReaders(int $limit = 30):array {
+    // 数量
+    if (intval($limit) < 1) return [];
+    // 不同数量分开缓存
+    $cacheKey = 'readers_' . $limit;
+    // 判定插件是否存在
+    $readers = cacheGet($cacheKey);
+    // 如果 MddCache 插件存在，则使用缓存
+    if ($readers !== null) return (array)$readers;
+    // 初始化数据库
+    $db = \Typecho\Db::get();
+    // 获取所有管理员（Group 为 administrator）的 uid 和邮箱，提升通用性（不硬编码 uid=1）
+    $admins = $db->fetchAll($db->select('uid', 'mail')->from('table.users')->where('group = ?', 'administrator'));
+    // 管理员邮箱数组
+    $adminUids = array_filter(array_column($admins, 'uid'));
+    // 管理员邮箱数组
+    $adminMails = array_filter(array_map('trim', array_column($admins, 'mail')));
+    // 构建评论统计查询
+    $select = $db->select(
+            'mail',
+            // 取最新一条评论的 author 和 url，避免 MAX() 导致的昵称与网址错配
+            'MAX(created) as last_time',
+            'COUNT(coid) as num'
+        )
+        ->from('table.comments')
+        ->where('status = ?', 'approved')
+        ->where('type = ?', 'comment')
+        //->where('mail IS NOT NULL AND mail <> ?', '')
+        ->group('mail')
+        ->order('num', \Typecho\Db::SORT_DESC)
+        ->limit($limit);
+    // 排除管理员 uid
+    //if (!empty($adminUids)) $select->where('authorId NOT IN (?)', $adminUids);
+    // 排除管理员邮箱（防止管理员以访客身份填邮箱评论）
+    //if (!empty($adminMails)) $select->where('mail NOT IN (?)', $adminMails);
+    // 开查
+    $rows = $db->fetchAll($select);
+    // 如果查询结果为空，则写入缓存并返回空数组
+    if (empty($rows)) {
+        cacheSet($cacheKey, []);
+        return [];
+    }
+    // 初始化读者墙数组
+    $readers = [];
+    // 遍历查询结果
+    foreach ($rows as $row) {
+        // 获取邮箱
+        $mail = $row['mail'];
+        // 获取该邮箱最后一次留下的合法昵称和网址
+        $latestComment = $db->fetchRow(
+            $db->select('author', 'url')
+               ->from('table.comments')
+               ->where('mail = ?', $mail)
+               ->where('status = ?', 'approved')
+               ->order('created', \Typecho\Db::SORT_DESC)
+               ->limit(1)
+        );
+        // 拼接 Gravatar / 头像地址（使用 MD5 和自定义镜像/官方 CDN）
+        $mailHash = md5(strtolower(trim($mail)));
+        // 调用系统方法生成 Gravatar 头像地址
+        $avatarUrl = \Typecho\Common::gravatarUrl($mailHash, 128, 'G');
+        // 构造读者信息数组
+        $readers[] = [
+            'author' => $latestComment['author'] ?? '热心网友',
+            'url'    => $latestComment['url'] ?? '',
+            'avatar' => $avatarUrl,
+            'count'  => (int)$row['num'],
+            'last_time' => (int)$row['last_time'] // 最后活跃时间
+        ];
+    }
+    // 缓存 30 天，只有在读者墙数据发生变化时才会更新缓存
+    cacheSet($cacheKey, $readers);
+    // 返回读者墙数组
+    return $readers;
+}
+
+/** 
+ * 最近文章列表，用于侧边栏显示
+ * 数量是从主题配置中获取的，默认为5
+ * 
+ * @return array 每项包含 permalink、title、date
+ */
+function getRecentPosts():array {
+    // 缓存键
+    $cacheKey = 'recentPosts';
+    // 如果存在直接返回
+    if ($recentPosts = cacheGet($cacheKey)) return $recentPosts;
+    // 查询最新评论
+    $recentPosts = [];
+    // limit 从配置中读
+    $limit = intval(Widget::widget('Widget_Options')->recentPosts ?? 5);
+    // 使用 Typecho 的 Widget 获取最新评论，限制为5条，忽略作者自己的评论
+    $postWidget = Widget::widget('Widget_Contents_Post_Recent', 'pageSize=' . $limit);
+    // 遍历评论，将每个评论的 permalink、excerpt、author 和 date 添加到数组中
+    while ($postWidget->next()) {
+        // 将评论数据添加到数组中
+        $recentPosts[] = [
+            'permalink' => $postWidget->permalink,
+            'title' => $postWidget->title,
+            'date' => date('Y-m-d', $postWidget->created)
+        ];
+    }
+    // 写入缓存
+    cacheSet($cacheKey, $recentPosts);
+    // 返回最近文章列表
+    return $recentPosts;
+}
+
+/**
+ * 获取友情链接
+ * 数据写在 slug 为 links 的独立页面正文里，格式与 links.php 一致
+ * 名称|简介|链接|头像(邮箱或图片URL)|失效标记|存档时间
+ * 
+ * 重要：如果你的链接页面slug不叫links，请修改 376行的 'links'改成你自己的链接页的slug
+ *
+ * @return array 每项包含 name、desc、url、avatar、dead
+ */
+function getLinks(): array {
+    // 缓存键
+    $cacheKey = 'links';
+    // 如果存在直接返回
+    $cached = cacheGet($cacheKey);
+    // 空数组也算有效缓存
+    if ($cached !== null) return $cached;
+    // 后台配置的连接条数
+    $limit = intval(Widget::widget('Widget_Options')->links ?? 10);
+    // 如果没有配置，则默认 10
+    if ($limit < 1) $limit = 10;
+    // 按 slug 取页面原文，content() 会过 Markdown，这里要拿 text
+    $db = \Typecho\Db::get();
+    // 获取链接页面内容
+    $page = $db->fetchRow($db->select('text')->from('table.contents')->where('type = ?', 'page')->where('status = ?', 'publish')->where('slug = ?', 'links')->limit(1));
+    // 如果页面不存在或没有正文，则返回空数组
+    if (empty($page['text'])) return [];
+    // 描述在 <!--more--> 之前，链接在之后
+    $parts = explode('<!--more-->', $page['text'], 2);
+    // 如果没有 <!--more-->，则取整个正文
+    $lines = preg_split('/\r\n|\r|\n/', trim($parts[1] ?? ''));
+    // 如果没有链接，则返回空数组
+    $links = [];
+    // 遍历每一行
+    foreach ($lines as $line) {
+        $item = explode('|', trim($line));
+        // 至少要有 名称|简介|链接|头像|失效标记 5 段
+        if (count($item) < 5) continue;
+        $url = trim($item[2]);
+        // 失效标记为 0 且填了存档时间时，改走 web.archive.org
+        if ($item[4] === '0' && !empty($item[5])) $url = 'https://web.archive.org/web/' . trim($item[5]) . '/' . $url;
+        // 头像是图片地址就直接用，否则按邮箱拼 Gravatar
+        $avatar = trim($item[3]);
+        // 如果头像地址是邮箱，则用 Gravatar
+        $avatar = strpos($avatar, '//') !== false ? $avatar : \Typecho\Common::gravatarUrl($avatar, 64, 'G');
+        // 构造链接信息数组
+        $links[] = [
+            'name'   => trim($item[0]),
+            'desc'   => trim($item[1]),
+            'url'    => $url,
+            'avatar' => $avatar,
+            'dead'   => $item[4] === '0',
+        ];
+        // 如果已经达到限制数量，则跳出循环
+        if (count($links) >= $limit) break;
+    }
+    // 写入缓存
+    cacheSet($cacheKey, $links);
+    // 返回链接列表
+    return $links;
 }
 
 /**
@@ -327,9 +517,11 @@ function isCachePluginExists():bool {
     // 如果已经判断过插件是否存在，则直接返回结果
     if ($exists !== null) return $exists;
     // 判断插件是否存在
-    $exists = class_exists('\TypechoPlugin\MddCache\Plugin');
-    // 返回结果
-    return $exists;
+    if (!class_exists('\TypechoPlugin\MddCache\Plugin')) return $exists = false;
+    // activated 里有才算启用，仅上传未启用的插件不在其中
+    $plugins = \Typecho\Plugin::export();
+    // 判断 MddCache 插件是否在 activated 数组中
+    return $exists = isset($plugins['activated']['MddCache']);
 }
 
 /**
