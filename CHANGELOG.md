@@ -1,5 +1,19 @@
 # 更新日志
 
+## 1.4.1
+
+### 优化
+
+- 公共库地址函数由 `getCDN()` 改名为 `assetBase()`，名字与实际用途一致：返回资源前缀，而不再把来源写死成 CDN
+- 评论作者查询由 `getCommentCoidAuthorMapByCid()` 改名为 `commentAuthors()`，缓存键由 `CommentsList_{cid}` 改为 `commentsList_{cid}`，旧缓存自动失效
+- 删除已不再使用的 `getSidebarData()`，侧栏各模块继续独立查询和缓存
+- 读者墙未传条数时改为读取后台配置，不再因编码默认值
+- 分页按钮边框改用 `--border-color`，深浅色模式下自动跟随
+
+### 其他
+
+- 主题版本号更新至 1.4.1
+
 ## 1.4.0
 
 ### 新增

@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.0-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.1-orange.svg)
 
 </div>
 
@@ -184,7 +184,7 @@ Jolix/
 后台主题设置将「全站公共库CDN地址」留空即可回退到主题目录下的 `lib/`(需自行放置对应库文件,目录结构与 CDN 保持一致)。评论头像预览使用的 md5 库为主题自带的 `js/md5.min.js`,不受该设置影响。
 
 **Q: 缓存数据不更新怎么办?**
-卸载 MddCache 插件或清空其缓存目录;归档(`archivesList`)、侧栏(`siderBar`)、标签(`tagsList`)、评论映射(`CommentsList_cid`)均有独立缓存键。从 1.3.4 起侧栏缓存键由 `siderData` 改为 `siderBar`,旧缓存会自动失效。
+卸载 MddCache 插件或清空其缓存目录。各模块使用独立缓存键:归档 `archivesList`、侧栏标签云 `tagsCloud`、标签页 `tagsList`、最新评论 `commentsList`、读者墙 `readers_{条数}`、最近文章 `recentPosts`、友情链接 `links`、评论作者 `commentsList_{cid}`。从 1.4.1 起侧栏不再使用整体缓存键 `siderBar`,评论作者缓存键由 `CommentsList_{cid}` 改为 `commentsList_{cid}`,旧缓存会自动失效。
 
 ## 更新日志
 

@@ -45,8 +45,8 @@
     <!-- 统计代码 -->
     <?php echo $this->options->statistics; ?>
     <!-- JS 文件 - 放在底部提升性能 -->
-    <script src="<?php getCDN(); ?>aos/2.3.4/aos.js" defer></script>
-    <script src="<?php getCDN(); ?>fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" defer></script>
+    <script src="<?php assetBase(); ?>aos/2.3.4/aos.js" defer></script>
+    <script src="<?php assetBase(); ?>fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" defer></script>
     <script src="<?php $this->options->themeUrl('/js/highlight.min.js?ver=11.9.0'); ?>" defer></script>
     <script>
         document.querySelectorAll('pre code.lang-html').forEach(function(element) {

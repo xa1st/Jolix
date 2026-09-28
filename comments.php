@@ -12,7 +12,7 @@ class CommentsAuthorsHelper {
     public static array $authorMap = [];
 }
 // 存入助手
-CommentsAuthorsHelper::$authorMap = getCommentCoidAuthorMapByCid($this->cid);
+CommentsAuthorsHelper::$authorMap = commentAuthors($this->cid);
 /**
  * 生成嵌套评论的 HTML 结构
  *

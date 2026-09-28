@@ -157,29 +157,6 @@ function getArchivesList():string {
 }
 
 /**
- * 获取侧边栏数据（带缓存）
- * @return array 包含分类、评论、标签的数组
- */
-function getSidebarData():array {
-    // 定义缓存键
-    $cacheKey = 'siderBar';
-    // 判定插件是否存在
-    $siderdata = cacheGet($cacheKey);
-    // 如果 MddCache 插件存在，则使用缓存
-    if ($siderdata) return (array)$siderdata;
-    // 查询最新评论
-    $comments = getCommentsList();
-    // 查询标签云
-    $tags = getTagsCloud();
-    // 最终结果
-    $data = ['categories' => $categories, 'comments' => $comments, 'tags' => $tags];
-    // 写入缓存
-    cacheSet($cacheKey, $data, 60 * 60 * 24 * 7); // 缓存一周，直到主动删除
-    // 返回结果
-    return $data;
-}
-
-/**
  * 查询标签云，用于侧边栏显示
  * @return array 标签云数组
  */
@@ -245,12 +222,12 @@ function getComments():array {
  * 读者墙
  * 统计已通过的读者评论，按邮箱合并，排除站长本人，按评论数从高到低
  * 
- * @param int $limit 显示人数，默认 30
+ * @param int $limit 显示人数，小于 1 时读主题配置，默认 30
  * @return array 每项包含 author、url、avatar、count
  */
-function getReaders(int $limit = 30):array {
-    // 数量
-    if (intval($limit) < 1) return [];
+function getReaders(int $limit = 0):array {
+    // 数量从主题配置读，默认30
+    if ($limit < 1) $limit = intval(Widget::widget('Widget_Options')->readers ?? 30) ?: 30;
     // 不同数量分开缓存
     $cacheKey = 'readers_' . $limit;
     // 判定插件是否存在
@@ -423,13 +400,13 @@ function getLinks(): array {
  * @param int $cid 文章 ID
  * @return array 格式为 ["coid" => "author"] 的数组
  */
-function getCommentCoidAuthorMapByCid(int $cid):array {
+function commentAuthors(int $cid):array {
     // 确保 cid 是有效的整数
     $cid = intval($cid);
     // 如果 cid 小于等于 0，则返回空数组
     if ($cid < 1)  return [];
     // 缓存缓存存在，则直接返回
-    $cacheKey = 'CommentsList_' . $cid;
+    $cacheKey = 'commentsList_' . $cid;
     // 定义容器
     $coidAuthorMap = [];
     // 如果缓存中存在，则直接返回
@@ -549,7 +526,7 @@ function cacheGet($key, $default = null) {
  * @return bool 返回缓存写入是否成功
  * 
  */
-function cacheSet($key, $value, $expire = 60 * 60 * 24 * 30):bool {
+function cacheSet($key, $value, $expire = 60 * 60 * 24 * 7):bool {
     // 如果 MddCache 插件存在，则使用缓存
     return isCachePluginExists() ? \TypechoPlugin\MddCache\Plugin::getCacheInstance()->set($key, $value, $expire) : false;
 }
@@ -569,7 +546,7 @@ function isPluginExists($pluginName) {
  * @param bool $render 是否输出
  * @return string
  */
-function getCDN($render = true) {
+function assetBase($render = true) {
     // 获取主题配置
     $options = Widget::widget('Widget_Options');
     //  获取CDN

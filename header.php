@@ -43,12 +43,12 @@
     <?php endif; ?>
     <!-- Style CSS -->
     <?php $this->options->siteCdn = $this->options->siteCdn ?? $this->options->themeUrl . 'libs/'; ?>
-    <link rel="stylesheet" href="<?php getCDN(); ?>lxgw-wenkai-screen-webfont/1.7.0/style.css" media="print" onload="this.media='all'"/>
-    <link rel="stylesheet" href="<?php getCDN(); ?>aos/2.3.4/aos.css" media="print" onload="this.media='all'"/>
-    <link rel="stylesheet" href="<?php getCDN(); ?>fancyapps-ui/5.0.36/fancybox/fancybox.css" media="print" onload="this.media='all'"/>
+    <link rel="stylesheet" href="<?php assetBase(); ?>lxgw-wenkai-screen-webfont/1.7.0/style.css" media="print" onload="this.media='all'"/>
+    <link rel="stylesheet" href="<?php assetBase(); ?>aos/2.3.4/aos.css" media="print" onload="this.media='all'"/>
+    <link rel="stylesheet" href="<?php assetBase(); ?>fancyapps-ui/5.0.36/fancybox/fancybox.css" media="print" onload="this.media='all'"/>
     <!-- 代码高亮主题 -->
-    <link rel="stylesheet" href="<?php getCDN(); ?>highlight.js/11.9.0/styles/a11y-light.min.css" media="print" onload="this.media='all'" id="hljs-light"/>
-    <link rel="stylesheet" href="<?php getCDN(); ?>highlight.js/11.9.0/styles/a11y-dark.min.css" media="print" onload="this.media='all'" disabled id="hljs-dark"/>
+    <link rel="stylesheet" href="<?php assetBase(); ?>highlight.js/11.9.0/styles/a11y-light.min.css" media="print" onload="this.media='all'" id="hljs-light"/>
+    <link rel="stylesheet" href="<?php assetBase(); ?>highlight.js/11.9.0/styles/a11y-dark.min.css" media="print" onload="this.media='all'" disabled id="hljs-dark"/>
     <link rel="stylesheet" href="<?php $this->options->themeUrl('/css/theme.min.css?ver=2026092203'); ?>"/>
     <?php if ($this->is('single')): ?>
         <script>var respondId='<?php echo $this->respondId;?>', spamStr = <?php echo \Typecho\Common::shuffleScriptVar($this->security->getToken($this->request->getRequestUrl()));?>;</script>
