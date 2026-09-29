@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.2-orange.svg)
 
 </div>
 
@@ -29,12 +29,12 @@
 - 💻 **代码高亮** highlight.js + 悬停复制按钮,支持明暗双主题
 - 🎬 **AOS 滚动动画** 元素随滚动淡入,`once` 只播一次
 - 💬 **增强评论系统** 嵌套回复、@提及、@待回复人高亮、UA 显示、头像 MD5 预览
-- 🗂️ **归档页面** 按年月分组,数据库查询结果缓存加速(默认 100 篇)
+- 🗂️ **归档页面** 按年月分组,查询结果写入文件缓存(默认最多 100 篇)
 - 🔤 **分类图标** 可为每个分类配置 Emoji 图标
 - 🧑‍💻 **公共库 CDN** 默认 Cloudflare CDN,离线可切换本地资源
 - 📊 **阅读量统计** 兼容 `TypechoPlugin\Views` 插件
 - 🧠 **AI 课代表** 文章支持 `ai_comment` 字段,输出 AI 总结卡片
-- 📦 **高性能缓存** 兼容 `MddCache` 插件,侧栏/归档等数据自动缓存
+- 📦 **文件缓存** 归档、读者墙、标签页写入主题缓存目录,填 `0` 可关闭
 - 📝 **附设页面** 友链、标签云、说说、外链跳转、404 等独立模板
 
 ## 截图
@@ -75,8 +75,13 @@
 | 侧边栏最新评论条数 | 默认 5 条 |
 | 侧边栏标签云条数 | 默认 20 条 |
 | 侧边栏读者墙条数 | 默认 10 条 |
+| 读者墙缓存时间 | 单位秒,默认 7200(2 小时),填 `0` 不缓存 |
 | 侧边栏最近文章条数 | 默认 10 条 |
-| 侧边栏友情链接条数 | 默认 10 条,数据取自 slug 为 `links` 的友情链接页面 |
+| 侧边栏友情链接条数 | 默认 5 条,数据取自友情链接页正文 |
+| 友情链接页 slug | 默认 `links`,对应独立页面的缩略名 |
+| 归档页文章数量 | 归档页最多列出的文章数,默认 100 篇 |
+| 归档页缓存时间 | 单位秒,默认 86400(1 天),填 `0` 不缓存 |
+| 缓存保存目录 | 相对 `usr/` 的目录名,默认 `cache`,即 `usr/cache` |
 
 **社交图标类名**(内置 fontello 图标库):
 
@@ -117,11 +122,10 @@ Jolix 内置多种自定义页面模板,在后台 **创建页面 → 模板** �
 
 | 插件 | 用途 |
 | --- | --- |
-| [MddCache](https://github.com/typecho-fans/plugins) | 数据缓存,大幅提升页面响应速度(可选) |
 | [Views](https://github.com/typecho-fans/plugins) | 文章阅读量统计(可选) |
 | [Says](https://github.com/typecho-fans/plugins) | 说说/动态发布(可选) |
 
-> 未安装缓存插件时主题自动跳过缓存逻辑,不会报错。
+> 1.4.2 起缓存由主题自己写入文件,不再需要 MddCache。
 
 ## 开发 & 构建
 
@@ -184,7 +188,7 @@ Jolix/
 后台主题设置将「全站公共库CDN地址」留空即可回退到主题目录下的 `lib/`(需自行放置对应库文件,目录结构与 CDN 保持一致)。评论头像预览使用的 md5 库为主题自带的 `js/md5.min.js`,不受该设置影响。
 
 **Q: 缓存数据不更新怎么办?**
-卸载 MddCache 插件或清空其缓存目录。各模块使用独立缓存键:归档 `archivesList`、侧栏标签云 `tagsCloud`、标签页 `tagsList`、最新评论 `commentsList`、读者墙 `readers_{条数}`、最近文章 `recentPosts`、友情链接 `links`、评论作者 `commentsList_{cid}`。从 1.4.1 起侧栏不再使用整体缓存键 `siderBar`,评论作者缓存键由 `CommentsList_{cid}` 改为 `commentsList_{cid}`,旧缓存会自动失效。
+删除主题缓存目录(默认 `usr/cache`)下以 `Jolix_` 开头的 `.cache` 文件,或把对应缓存时间改成 `0`。当前会落盘的只有归档 `Jolix_archivesList`、读者墙 `Jolix_readers{条数}`、标签页 `Jolix_tagsList`。侧栏标签云、最新评论、最近文章和友情链接每次请求直接查询。
 
 ## 更新日志
 

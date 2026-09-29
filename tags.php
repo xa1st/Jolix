@@ -19,16 +19,16 @@ $this->need('header.php');
             <div class="tags">
                 <?php
                     // 缓存标签列表，减少数据库查询
-                    $tagsList = (array)cacheGet('tagsList');
+                    $tagsList = getCache('Jolix_tags');
                     // 缓存不存在，则重新获取
-                    if (!$tagsList) {
+                    if (!is_array($tagsList)) {
+                        $tagsList = [];
                         $tags = $this->widget('Widget_Metas_Tag_Cloud', 'ignoreZeroCount=1');
                         while($tags->next()) {
                             $tagsList[] = ['name' => $tags->name, 'count' => $tags->count, 'permalink' => $tags->permalink];
                         }
+                        setCache('Jolix_tags', $tagsList, 86400);
                     }
-                    // 30天，更新文章的时候自动更新缓存
-                    cacheSet('tagsList', $tagsList);
                 ?>
                 <?php foreach ($tagsList as $tag): ?>
                     <a href="<?php echo $tag['permalink']; ?>" class="tag" data-aos="zoom-in" data-aos-delay="50" title="标签「<?php echo $tag['name']; ?>」共有<?php echo $tag['count']; ?>篇文章"> 
