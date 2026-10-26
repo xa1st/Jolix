@@ -79,7 +79,7 @@ class LazyLoadManager {
     initializeFancybox() {
         if (!window.Fancybox) return;
         window.Fancybox.destroy();
-        document.querySelectorAll('.post-content p:has(img), .says-content p:has(img)').forEach((paragraph, groupIndex) => {
+        document.querySelectorAll('.post-content p:has(img)').forEach((paragraph, groupIndex) => {
             const images = paragraph.querySelectorAll('img.loaded');
             if (images.length === 0) return;
             images.forEach((img, imgIndex) => {

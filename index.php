@@ -6,7 +6,7 @@
  * 
  * @package Jolix
  * @author 猫东东
- * @version 1.4.2
+ * @version 1.4.3
  * @link https://github.com/xa1st/Jolix
  * @license Mulan PSL v2
  */
@@ -18,7 +18,7 @@ $this->need('header.php');
     <!-- 左侧菜单栏 -->
     <?php $this->need('menu.php'); ?> 
     <!-- 中间栏 -->
-    <div class="main-content page-index w-full lg:flex-1 lg:mx-6 overflow-hidden">
+    <div class="main-content page-index w-full lg:flex-1 lg:mx-6 overflow-hidden min-w-0">
         <?php while ($this->next()): ?>
             <!-- 博客循环体 -->
             <div class="blog-card bg-white rounded-lg shadow-sm p-3 lg:p-6 mb-6 dark:bg-black " data-aos="fade-up">
