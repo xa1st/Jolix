@@ -49,7 +49,7 @@
     <!-- 代码高亮主题 -->
     <link rel="stylesheet" href="<?php assetBase(); ?>highlight.js/11.9.0/styles/a11y-light.min.css" media="print" onload="this.media='all'" id="hljs-light"/>
     <link rel="stylesheet" href="<?php assetBase(); ?>highlight.js/11.9.0/styles/a11y-dark.min.css" media="print" onload="this.media='all'" disabled id="hljs-dark"/>
-    <link rel="stylesheet" href="<?php $this->options->themeUrl('/css/theme.min.css?ver=2026092203'); ?>"/>
+    <link rel="stylesheet" href="<?php $this->options->themeUrl('/css/theme.min.css?ver=2026102801'); ?>"/>
     <?php if ($this->is('single')): ?>
         <script>var respondId='<?php echo $this->respondId;?>', spamStr = <?php echo \Typecho\Common::shuffleScriptVar($this->security->getToken($this->request->getRequestUrl()));?>;</script>
         <?php $commentReply = $this->options->themeUrl . '/js/commentReply.js?var=1'; $antiSpam = $this->options->themeUrl . '/js/antiSpam.js?ver=5';?>

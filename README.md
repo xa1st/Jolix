@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.3-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.4-orange.svg)
 
 </div>
 
