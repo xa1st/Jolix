@@ -587,6 +587,7 @@ function parseUserAgent($userAgent) {
 /** 
  * 转义 HTML 实体，防止 XSS 攻击
  * @param string $string 待转义的字符串
+ * @return string 转义后的字符串
  */
 function escapeHtml(string $string): string {
     return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');

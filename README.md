@@ -1,6 +1,6 @@
 <div align="center">
 
-<h1>🌸 JolixPro</h1>
+<h1>🌸 Jolix</h1>
 
 **Typecho 极简三栏主题 · 轻量如光**
 
@@ -8,16 +8,23 @@
 
 基于 **Tailwind CSS 4.1** 构建,支持响应式、深浅色模式、代码高亮、图片宫格与灯箱等丰富特性。
 
-[✨ 在线演示](https://bsay.de) · [📦 下载](https://github.com/xa1st/JolixPro/releases) · [🐛 Bug 反馈](https://github.com/xa1st/JolixPro/issues)
+[✨ 在线演示](https://bsay.de) · [📦 下载](https://github.com/xa1st/Jolix/releases) · [🐛 Bug 反馈](https://github.com/xa1st/Jolix/issues)
 
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.6-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.6.0-orange.svg)
 
 </div>
 
 ---
+
+## 版本号说明
+
+Jolix 采用四段式版本号 `主版本.次版本.功能版本.修订版本`,如 `1.4.6.0`:
+
+- 前三段:功能版本,有新功能或较大调整时递增
+- 第四段:`0` 表示稳定版本,非 `0` 表示在对应稳定版之上修 BUG 的版本(如 `1.4.6.1`)
 
 ## 特性
 
@@ -37,11 +44,12 @@
 - 📊 **阅读量统计** 兼容 `TypechoPlugin\Views` 插件
 - 🧠 **AI 课代表** 文章支持 `ai_comment` 字段,输出 AI 总结卡片
 - 📦 **文件缓存** 归档、读者墙、标签页写入主题缓存目录,填 `0` 可关闭
-- 📝 **附设页面** 留言本、友链、标签云、说说、外链跳转、404 等独立模板
+- 📝 **附设页面** 留言本、友链、标签云、归档、404 等独立页面模板
+- 📡 **说说动态** 内置 `says.min.js` 加载器与 `says.min.css`,自定义页面接入 Memos 接口即可展示说说
 
 ## 截图
 
-![JolixPro 截图](screenshot.png)
+![Jolix 截图](screenshot.png)
 
 ## 使用环境
 
@@ -53,7 +61,7 @@
 
 ## 安装
 
-1. 将主题文件夹放入 Typecho 的 `usr/themes/` 目录
+1. 将主题文件夹命名为 `Jolix`,放入 Typecho 的 `usr/themes/` 目录
 2. 后台 **控制台 → 外观 → 启用主题**
 3. 进入 **设置外观** 完成基础配置(见下文)
 
@@ -91,7 +99,7 @@
 
 ## 页面模板
 
-JolixPro 内置多种自定义页面模板,在后台 **创建页面 → 模板** 中选择:
+Jolix 内置多种自定义页面模板,在后台 **创建页面 → 模板** 中选择:
 
 | 模板 | 说明 |
 | --- | --- |
@@ -99,7 +107,6 @@ JolixPro 内置多种自定义页面模板,在后台 **创建页面 → 模板**
 | 归档 | 按年份/月份归档全部文章 |
 | 标签 | 标签云 + 可自定义标签描述 |
 | 友情链接 | 友链列表,正文格式见下 |
-| 说说 | 展示 Says 插件发布的说说法 |
 | 留言本 | 页面正文 + 评论框 |
 
 ### 友情链接格式
@@ -110,16 +117,33 @@ JolixPro 内置多种自定义页面模板,在后台 **创建页面 → 模板**
 名称|简介|链接|头像(邮箱或图片URL)|失效标记|存档时间
 ```
 
-### 说说页面
+- 头像字段填邮箱则走 Gravatar,填图片 URL(含 `//`)则直接使用
+- 失效标记填 `0` 且填写了存档时间时,链接自动改走 web.archive.org 存档
 
-需要安装 [Says 评论说说插件](https://github.com/typecho-fans/plugins),说说页模板会自动调用插件渲染,主题自带 `says.min.js` / `says.min.css` 与之对接,说说图片走独立的宫格与懒加载样式。
+### 说说动态
+
+主题自带说说加载器(`assets/js/says.min.js`)与配套样式(`assets/css/says.min.css`),在自定义页面正文中引入并初始化即可,数据来自 Memos 接口:
+
+```html
+<link rel="stylesheet" href="主题目录/assets/css/says.min.css">
+<div id="says"></div>
+<script src="主题目录/assets/js/says.min.js"></script>
+<script>
+new MemoLoader({
+    memos: '/memos/',   // 接口地址
+    limit: 8,           // 每页条数
+    domId: '#says'      // 容器选择器
+});
+</script>
+```
+
+说说图片走独立的宫格与懒加载样式。
 
 ## 推荐插件
 
 | 插件 | 用途 |
 | --- | --- |
 | [Views](https://github.com/typecho-fans/plugins) | 文章阅读量统计(可选) |
-| [Says](https://github.com/typecho-fans/plugins) | 说说/动态发布(可选) |
 
 > 1.4.2 起缓存由主题自己写入文件,不再需要 MddCache。
 
@@ -134,17 +158,19 @@ npm install
 # 开发模式(监听 src/theme.css 变更,输出未压缩样式)
 npm run dev
 
-# 生产构建(样式 + 脚本 + 说说页资源,一次全部输出)
+# 生产构建(样式 + 脚本 + 说说资源,一次全部输出)
 npm run build
 ```
 
 ```
 src/theme.css            # Tailwind 源样式(@theme 变量、components、utilities)
 src/theme.js             # 主题脚本源码(深浅色、懒加载、灯箱等)
-src/says.js / says.css   # 说说页脚本与样式源码
+src/says.js / says.css   # 说说加载器与样式源码
 assets/css/theme.css     # 开发产物(未压缩)
 assets/css/theme.min.css # 生产产物(页面实际引用)
-assets/js/*.min.js       # 生产产物(theme / says / md5)
+assets/js/theme.min.js   # 主题脚本生产产物(页面实际引用)
+assets/js/md5.min.js     # 评论头像预览依赖(页面实际引用)
+assets/js/says.min.js    # 说说加载器生产产物(按需引用)
 ```
 
 > 修改源码后需执行 `npm run build`,并同步更换模板中的缓存版本参数(`?ver=xxxx`)以刷新浏览器缓存。
@@ -152,25 +178,23 @@ assets/js/*.min.js       # 生产产物(theme / says / md5)
 ## 文件结构
 
 ```
-JolixPro/
+Jolix/
 ├── index.php           # 首页
 ├── post.php            # 文章页
 ├── archive.php         # 分类/标签/搜索归档
 ├── comments.php        # 评论组件
 ├── 404.php             # 404 页面
-├── go.php              # 外链跳转中转页
 ├── about.php           # 关于页面模板
 ├── archives.php        # 归档页面模板
 ├── tags.php            # 标签云页面模板
 ├── links.php           # 友链页面模板
 ├── gbook.php           # 留言本页面模板
-├── says.php            # 说说页面模板
 ├── menu.php            # 左侧栏
 ├── sider.php           # 右侧栏(搜索、分类固定,其余模块按配置加载)
 ├── sider/              # 侧边栏模块:comments、tags、readers、posts、links
 ├── header.php          # 头部(图标、og 分享标签)
 ├── footer.php          # 底部(公共库脚本加载)
-├── functions.php       # 主题功能与配置(libUrl 等)
+├── functions.php       # 主题功能与配置(libUrl、缓存等)
 ├── CHANGELOG.md        # 更新日志
 ├── assets/             # 构建产物:css、js、fonts、img(站点图标与分享图)
 ├── libs/               # 本地公共库:aos、fancyapps-ui、highlight.js、marked
