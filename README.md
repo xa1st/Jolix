@@ -45,7 +45,6 @@ Jolix 采用四段式版本号 `主版本.次版本.功能版本.修订版本`,�
 - 🧠 **AI 课代表** 文章支持 `ai_comment` 字段,输出 AI 总结卡片
 - 📦 **文件缓存** 归档、读者墙、标签页写入主题缓存目录,填 `0` 可关闭
 - 📝 **附设页面** 留言本、友链、标签云、归档、404 等独立页面模板
-- 📡 **说说动态** 内置 `says.min.js` 加载器与 `says.min.css`,自定义页面接入 Memos 接口即可展示说说
 
 ## 截图
 
@@ -120,30 +119,12 @@ Jolix 内置多种自定义页面模板,在后台 **创建页面 → 模板** �
 - 头像字段填邮箱则走 Gravatar,填图片 URL(含 `//`)则直接使用
 - 失效标记填 `0` 且填写了存档时间时,链接自动改走 web.archive.org 存档
 
-### 说说动态
-
-主题自带说说加载器(`assets/js/says.min.js`)与配套样式(`assets/css/says.min.css`),在自定义页面正文中引入并初始化即可,数据来自 Memos 接口:
-
-```html
-<link rel="stylesheet" href="主题目录/assets/css/says.min.css">
-<div id="says"></div>
-<script src="主题目录/assets/js/says.min.js"></script>
-<script>
-new MemoLoader({
-    memos: '/memos/',   // 接口地址
-    limit: 8,           // 每页条数
-    domId: '#says'      // 容器选择器
-});
-</script>
-```
-
-说说图片走独立的宫格与懒加载样式。
-
 ## 推荐插件
 
 | 插件 | 用途 |
 | --- | --- |
 | [Views](https://github.com/typecho-fans/plugins) | 文章阅读量统计(可选) |
+| [Says](https://github.com/typecho-fans/plugins) | 说说/动态发布(可选) |
 
 > 1.4.2 起缓存由主题自己写入文件,不再需要 MddCache。
 
@@ -158,19 +139,17 @@ npm install
 # 开发模式(监听 src/theme.css 变更,输出未压缩样式)
 npm run dev
 
-# 生产构建(样式 + 脚本 + 说说资源,一次全部输出)
+# 生产构建(样式 + 脚本,一次全部输出)
 npm run build
 ```
 
 ```
 src/theme.css            # Tailwind 源样式(@theme 变量、components、utilities)
 src/theme.js             # 主题脚本源码(深浅色、懒加载、灯箱等)
-src/says.js / says.css   # 说说加载器与样式源码
 assets/css/theme.css     # 开发产物(未压缩)
 assets/css/theme.min.css # 生产产物(页面实际引用)
 assets/js/theme.min.js   # 主题脚本生产产物(页面实际引用)
 assets/js/md5.min.js     # 评论头像预览依赖(页面实际引用)
-assets/js/says.min.js    # 说说加载器生产产物(按需引用)
 ```
 
 > 修改源码后需执行 `npm run build`,并同步更换模板中的缓存版本参数(`?ver=xxxx`)以刷新浏览器缓存。
@@ -198,7 +177,7 @@ Jolix/
 ├── CHANGELOG.md        # 更新日志
 ├── assets/             # 构建产物:css、js、fonts、img(站点图标与分享图)
 ├── libs/               # 本地公共库:aos、fancyapps-ui、highlight.js、marked
-├── src/                # 源码:theme.css、theme.js、says.js/css
+├── src/                # 源码:theme.css、theme.js
 └── screenshot.png      # 主题截图(Typecho 后台预览用,勿改名/移动)
 ```
 

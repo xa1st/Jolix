@@ -6,8 +6,7 @@
         "dev": "npx @tailwindcss/cli -i ./src/theme.css -o ./assets/css/theme.css --watch",
         "build:te": "npx terser ./src/theme.js -o ./assets/js/theme.min.js -c -m",
         "build:theme": "npx @tailwindcss/cli -i ./src/theme.css -o ./assets/css/theme.min.css --minify",
-        "build:says": "npx terser ./src/says.js -o ./assets/js/says.min.js -c -m && npx cleancss ./src/says.css -o ./assets/css/says.min.css",
-        "build": "npm run build:theme && npm run build:te && npm run build:says"
+        "build": "npm run build:theme && npm run build:te"
     },
     "keywords": [],
     "author": "",

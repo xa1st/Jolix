@@ -6,7 +6,7 @@
 
 - 评论系统改用 Typecho 原生回复与防垃圾脚本，移除主题自定义评论脚本 `src/comment.js` 及构建产物 `assets/js/comment.min.js`
 - 公共库版本与镜像对齐：Fancybox 6.0.33、highlight.js 11.11.0、marked 15.0.7，移除 CDN 失败回退机制（`libFallback()` 及模板 `onerror` 属性）
-- 外链跳转页 `go.php` 适配新的资源目录结构，复用主题样式与字体（布局改用 Tailwind 工具类）
+- 移除外链跳转页 `go.php` 与说说资源（`src/says.js`、`src/says.css` 及构建产物 `assets/js/says.min.js`、`assets/css/says.min.css`），外链跳转与说说功能由插件负责，构建脚本不再输出 says 资源
 - 友情链接页改为调用 `getLinks(0)` 读取数据，不再在模板里重复解析正文；`getLinks()` 新增 `$limit` 参数，不传读后台配置（侧边栏用），传 `0` 不限制（友链页用），并按条数分别缓存，友链页与侧边栏同页调用互不影响
 - 友情链接页输出的名称、简介、链接、头像统一转义，URL 中的 `ref` 参数同步转义
 - 友情链接解析统一走 `getLinks()` 后兼容 Windows 换行符（此前页面模板用 `explode("\n")` 分行，CRLF 时字段尾部会残留 `\r`）
