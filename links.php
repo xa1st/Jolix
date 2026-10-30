@@ -1,6 +1,6 @@
 <?php
 /**
- * 友情链接
+ * 友情链接(单页版)
  *
  * @package custom
  */
@@ -14,25 +14,26 @@ $this->need('header.php');
     <!-- 中间栏 -->
     <div class="main-content page-links w-full lg:flex-1 lg:mx-6" data-aos="fade-up">
         <div data-aos="fade-up" class="links-box">
-            <h2 class="tit"># 友情链接</h2>
-            <?php 
+            <h2 class="tit"># <?php $this->title() ?></h2>
+            <?php
                 $text = explode("<!--more-->", $this->text); // 分割文本内容
                 $description = trim($text[0]); // 获取描述部分
-                $content = (array)explode("\n", empty($text[1]) ? '' : trim($text[1])); // 获取链接部分
+                $links = getLinks(0); // 链接数据统一由 getLinks() 解析，0 表示不限制条数
             ?>
             <!-- 如果描述不为空，则显示描述 -->
             <?php if (!empty($description)): ?><div class="desc"><?php echo $description; ?></div><?php endif; ?>
             <div class="friend-link-card">
-                <?php foreach ($content as $item):?>
-                    <?php $item = explode('|', $item);?>
-                    <?php if (count($item) < 5) continue; ?>
-                    <?php $name = $item[0] ?? '无名氏'; $url = $item[4] === '0' && !empty($item[5]) ? "https://web.archive.org/web/{$item[5]}/{$item[2]}" : $item[2]; ?>
-                    <a data-safe href="<?php echo $url ? "{$url}?ref={$_SERVER['HTTP_HOST']}" : 'javascript:void(0)';?>" target="_blank" title="<?php echo $name; ?> - <?php echo $item[1] ?? ''; ?>" class="link-item">
-                        <?php $avatar = '/usr/static/noname.webp';if (!empty($item[3]))  $avatar =  strpos($item[3], '//') !== false ? trim($item[3]) : __TYPECHO_GRAVATAR_PREFIX__ . $item[3] . '?s=64&r=G'; ?>
-                        <img src="<?php echo $avatar;?>" alt="<?php echo $name; ?>" class="w-12 h-12 rounded-full mr-4">
+                <?php foreach ($links as $link):?>
+                    <?php
+                        $name = $link['name'] !== '' ? $link['name'] : '无名氏';
+                        $host = escapeHtml($_SERVER['HTTP_HOST'] ?? '');
+                        $url = $link['url'] ? escapeHtml($link['url']) . "?ref={$host}" : 'javascript:void(0)';
+                    ?>
+                    <a data-safe href="<?php echo $url; ?>" target="_blank" title="<?php echo escapeHtml($name . ' - ' . $link['desc']); ?>" class="link-item">
+                        <img src="<?php echo escapeHtml($link['avatar']); ?>" alt="<?php echo escapeHtml($name); ?>" class="w-12 h-12 rounded-full mr-4">
                         <div class="info">
-                            <div class="link-name"><?php echo $name; ?></div>
-                            <div class="link-link"><?php echo $item[1] ?? ''; ?> </div>
+                            <div class="link-name"><?php echo escapeHtml($name); ?></div>
+                            <div class="link-link"><?php echo escapeHtml($link['desc']); ?> </div>
                         </div>
                     </a>
                 <?php endforeach;?>

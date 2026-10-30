@@ -120,8 +120,9 @@ function threadedComments($comments, $options):void {
     <?php endif ?>
 </div>
 <?php if ($this->allow('comment')): ?>
+    <!-- 动态加载md5库 -->
+    <script src="<?php $this->options->themeUrl('assets/js/md5.min.js'); ?>" type="text/javascript"></script>
     <!-- 评论事件 -->
-    <script src="/usr/themes/Jolix/js/md5.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // 获取当前邮件

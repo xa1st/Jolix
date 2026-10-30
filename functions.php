@@ -27,7 +27,7 @@ function themeConfig($form) {
     $categoryIcon = new Text('categoryIcon', null, '🎯|🧠|🎮|📹|📊', _t('分类图标'), _t('填写自定义分类EMOJI图标，按顺序从左到右，用|分隔，留空则不显示'));
     $form->addInput($categoryIcon);
     // 网站标题配置项
-    $siteCdn = new Text('siteCdn', null, '//cdnjs.cloudflare.com/ajax/libs', _t('全站公共库CDN地址'), _t('默认CDN地址，留空则使用本地资源，后面需要带/'));
+    $siteCdn = new Text('siteCdn', null, '//cdnjs.cloudflare.com/ajax/libs', _t('全站公共库CDN地址'), _t('默认CDN地址，留空则回退到主题本地 libs/ 目录，结尾斜杠可省略'));
     $form->addInput($siteCdn);
     // 网站创建时间
     $siteTime = new Text('siteTime', null, date('Y-m-d H:i:s'), _t('网站创建时间'), _t('格式：YYYY-MM-DD, 用于计算网站运行时间,为空则为今天起算'));
@@ -335,18 +335,18 @@ function getRecentPosts():array {
  * 获取友情链接
  * 数据写在 slug 为 links 的独立页面正文里，格式与 links.php 一致
  * 名称|简介|链接|头像(邮箱或图片URL)|失效标记|存档时间
- * 
+ *
  * 友情链接页的 slug 读后台配置 linksSlug，默认为 links
  *
+ * @param int|null $limit 条数：不传读后台「侧边栏友情链接条数」配置(默认5)，传 0 不限制
  * @return array 每项包含 name、desc、url、avatar、dead
  */
-function getLinks(): array {
-    // 缓存键
-    static $links = null;
-    // 如果存在直接返回
-    if ($links !== null) return $links;
-    // 后台配置的连接条数
-    $limit = intval(Widget::widget('Widget_Options')->links ?? 5) ?: 5;
+function getLinks(?int $limit = null): array {
+    // 条数：不传时读后台配置，传 0 表示不限制
+    if ($limit === null) $limit = intval(Widget::widget('Widget_Options')->links ?? 5) ?: 5;
+    // 按条数分别缓存，友链页(getLinks(0))与侧边栏(getLinks())同页调用时互不影响
+    static $cache = [];
+    if (isset($cache[$limit])) return $cache[$limit];
     // 获取友情链接页的 slug，默认为 links
     $slug = Widget::widget('Widget_Options')->linksSlug ?? 'links';
     // 按 slug 取页面原文，content() 会过 Markdown，这里要拿 text
@@ -381,11 +381,11 @@ function getLinks(): array {
             'avatar' => $avatar,
             'dead'   => $item[4] === '0',
         ];
-        // 如果已经达到限制数量，则跳出循环
-        if (count($links) >= $limit) break;
+        // 达到限制条数时跳出，0 表示不限制
+        if ($limit > 0 && count($links) >= $limit) break;
     }
-    // 返回链接列表
-    return $links;
+    // 写入本次请求的缓存并返回
+    return $cache[$limit] = $links;
 }
 
 /**
@@ -509,17 +509,20 @@ function getThemeVersion() {
 }
 
 /* *
- * 获取CDN
- * @param bool $render 是否输出
- * @return string
+ * 公共库资源地址（CDN 优先，留空回退本地 libs 目录）
+ * @param string $path 库路径，如 'aos/2.3.4/aos.js'
+ * @param bool $echo true 直接输出，false 返回字符串
+ * @return string|null
  */
-function assetBase($render = true) {
-    //  获取CDN
-    $res = Widget::widget('Widget_Options')->siteCdn ?? Widget::widget('Widget_Options')->themeUrl . '/lib/';
-    // 判定是否直接输出
-    if (!$render) return $res;
-    // 否则直接输出
-    echo $res;
+function libUrl($path, $echo = true) {
+    $options = Widget::widget('Widget_Options');
+    // 留空回退本地资源，非空则去掉结尾斜杠统一拼接
+    $base = empty($options->siteCdn) ? $options->themeUrl . '/libs/' : rtrim($options->siteCdn, '/');
+    // 拼出完整地址
+    $url = $base . '/' . ltrim($path, '/');
+    // 判定是输出还是返回
+    if ($echo) { echo $url; return null; }
+    return $url;
 }
 
 /**
@@ -580,5 +583,11 @@ function parseUserAgent($userAgent) {
     }
     return $result;
 }
-?>
 
+/** 
+ * 转义 HTML 实体，防止 XSS 攻击
+ * @param string $string 待转义的字符串
+ */
+function escapeHtml(string $string): string {
+    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}

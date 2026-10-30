@@ -45,16 +45,10 @@
     <!-- 统计代码 -->
     <?php echo $this->options->statistics; ?>
     <!-- JS 文件 - 放在底部提升性能 -->
-    <script src="<?php assetBase(); ?>aos/2.3.4/aos.js" defer></script>
-    <script src="<?php assetBase(); ?>fancyapps-ui/5.0.36/fancybox/fancybox.umd.js" defer></script>
-    <script src="<?php $this->options->themeUrl('/js/highlight.min.js?ver=11.9.0'); ?>" defer></script>
-    <script>
-        document.querySelectorAll('pre code.lang-html').forEach(function(element) {
-            element.classList.add('hljs','language-html');
-            element.innerText = element.innerText.replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-        });    
-    </script>
-    <script src="<?php $this->options->themeUrl('/js/lazyload.js?ver=202511302'); ?>" defer></script>
-    <script src="<?php $this->options->themeUrl('/js/theme.js?ver=20250618'); ?>" defer></script>
+    <script src="<?php libUrl('aos/2.3.4/aos.js'); ?>" defer></script>
+    <script src="<?php libUrl('fancyapps-ui/6.0.33/fancybox/fancybox.umd.js'); ?>" defer></script>
+    <script src="<?php libUrl('highlight.js/11.11.0/highlight.min.js'); ?>" defer></script>
+    <script>document.querySelectorAll('pre code.lang-html').forEach(function(element) {element.classList.add('hljs','language-html');element.innerText = element.innerText.replace(/&lt;/g,'<').replace(/&gt;/g,'>');});</script>
+    <script src="<?php $this->options->themeUrl('assets/js/theme.min.js'); ?>" defer></script>
 </body>
 </html>

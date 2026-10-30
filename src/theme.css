@@ -163,13 +163,13 @@
     /* 侧边栏 & 通用容器 */
     .sider-container {
         @apply rounded-lg mb-4 lg:mb-6 lg:shadow-md lg:p-4 bg-transparent lg:bg-white lg:dark:bg-black;
-
+        
         .tags {
             @apply flex flex-wrap gap-2 text-gray-700 dark:text-gray-200;
             .tag {
                 @apply px-2 py-1 text-sm rounded bg-(--bg-primary) dark:bg-gray-700/50;
                 &:hover {
-                    color: var(--link-hover-text-color);
+                    color: var(--link-hover-text-color); 
                 }
             }
         }
@@ -374,32 +374,6 @@
             color: var(--primary);
         }
 
-        @supports selector(:has(*)) {
-            /* 图片网格系统 (使用原生 CSS Grid 语法处理复杂 nth-child 逻辑) */
-            p:has(img) {
-                @apply my-4 grid gap-2 relative;
-                /* 默认(移动端):全部 1 列 */
-                grid-template-columns: 1fr;
-            }
-
-            /* 1张图:始终 1 列 */
-            p:has(>img:first-child:last-child) { grid-template-columns: 1fr; }
-
-            /* ≥sm (40rem,对齐 Tailwind sm=640):多图 2 列 */
-            @media (min-width: 40rem) {
-                p:has(>img:nth-child(2)),
-                p:has(>img:nth-child(4)),
-                p:has(>img:nth-child(n+2)) { grid-template-columns: repeat(2, 1fr); }
-            }
-
-            /* ≥lg (64rem,对齐 Tailwind lg=1024):3/5/6 图 3 列 */
-            @media (min-width: 64rem) {
-                p:has(>img:nth-child(3)),
-                p:has(>img:nth-child(5)),
-                p:has(>img:nth-child(6)) { grid-template-columns: repeat(3, 1fr); }
-            }
-        }
-
         /* 图片本身样式 */
         img {
             @apply w-full h-auto max-h-[600px] object-cover rounded-[15px] cursor-pointer transition-all duration-300 mx-auto;
@@ -429,6 +403,70 @@
                     box-shadow: 0 0px 25px rgba(0,0,0,0.1);
                 }
             }
+        }
+
+        /* 图片宫格:手写 <figure class="pg-1"> ~ <figure class="pg-9">,内部图片用完整 <img> 标签(Markdown 语法在块级 HTML 里不解析) */
+        figure[class*="pg-"] {
+            @apply grid gap-2 my-4;
+
+            > img {
+                @apply w-full h-full max-h-none object-cover rounded-[15px];
+                aspect-ratio: 4 / 3;
+            }
+
+            > figcaption {
+                @apply col-span-full mt-1 text-center text-sm text-gray-500 dark:text-gray-400;
+            }
+        }
+
+        /* 1张:独占整行 */
+        figure.pg-1 { grid-template-columns: 1fr; }
+
+        /* 2张:各占一半 */
+        figure.pg-2 { grid-template-columns: repeat(2, 1fr); }
+
+        /* 3张:各占三分之一 */
+        figure.pg-3 { grid-template-columns: repeat(3, 1fr); }
+
+        /* 4张:一行四个,各占四分之一 */
+        figure.pg-4 { grid-template-columns: repeat(4, 1fr); }
+
+        /* 5张:上2张各占一半,下3张各占三分之一;上排压扁到与下排等高 */
+        figure.pg-5 {
+            grid-template-columns: repeat(6, 1fr);
+            > img:nth-child(-n+2) { grid-column: span 3; aspect-ratio: 2 / 1; }
+            > img:nth-child(n+3) { grid-column: span 2; }
+        }
+
+        /* 6张:两行三列 */
+        figure.pg-6 { grid-template-columns: repeat(3, 1fr); }
+
+        /* 7张:首图独占整行(全景比例),下两行各3张,等高 */
+        figure.pg-7 {
+            grid-template-columns: repeat(6, 1fr);
+            > img:first-child { grid-column: span 6; aspect-ratio: 4 / 1; }
+            > img:nth-child(n+2) { grid-column: span 2; }
+        }
+
+        /* 8张:首行2张各占一半(压扁等高),下两行各3张 */
+        figure.pg-8 {
+            grid-template-columns: repeat(6, 1fr);
+            > img:nth-child(-n+2) { grid-column: span 3; aspect-ratio: 2 / 1; }
+            > img:nth-child(n+3) { grid-column: span 2; }
+        }
+
+        /* 9张:九宫格 */
+        figure.pg-9 { grid-template-columns: repeat(3, 1fr); }
+
+        /* 移动端:1图独占一行;2/4/6/8图全部各占50%;3/5/7/9图首图100%,其余各占50%;全部等高 */
+        @media (max-width: 40rem) {
+            figure[class*="pg-"] { grid-template-columns: repeat(2, 1fr); }
+            figure[class*="pg-"] > img:nth-child(n) { grid-column: auto; aspect-ratio: 4 / 3; }
+            figure.pg-1 { grid-template-columns: 1fr; }
+            figure.pg-3 > img:first-child,
+            figure.pg-5 > img:first-child,
+            figure.pg-7 > img:first-child,
+            figure.pg-9 > img:first-child { grid-column: span 2; aspect-ratio: 8 / 3; }
         }
     }
 

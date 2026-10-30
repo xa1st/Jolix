@@ -3,8 +3,11 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "dev": "npx @tailwindcss/cli -i ./src/tailwind.css -o ./css/theme.css --watch",
-        "build": "npx @tailwindcss/cli -i ./src/tailwind.css -o ./css/theme.min.css --minify"
+        "dev": "npx @tailwindcss/cli -i ./src/theme.css -o ./assets/css/theme.css --watch",
+        "build:te": "npx terser ./src/theme.js -o ./assets/js/theme.min.js -c -m",
+        "build:theme": "npx @tailwindcss/cli -i ./src/theme.css -o ./assets/css/theme.min.css --minify",
+        "build:says": "npx terser ./src/says.js -o ./assets/js/says.min.js -c -m && npx cleancss ./src/says.css -o ./assets/css/says.min.css",
+        "build": "npm run build:theme && npm run build:te && npm run build:says"
     },
     "keywords": [],
     "author": "",
@@ -18,5 +21,9 @@
         "tailwind-scrollbar": "^4.0.2",
         "tailwindcss": "^4.1.6",
         "tailwindcss-cli": "^0.1.2"
+    },
+    "devDependencies": {
+        "clean-css-cli": "^5.6.3",
+        "terser": "^5.51.2"
     }
 }
