@@ -11,9 +11,6 @@ use Typecho\Widget\Helper\Form\Element\Textarea;
 
 /** 注册主题自定义字段 */
 function themeConfig($form) {
-    // 网页favicon地址
-    $faviconUrl = new Text('faviconUrl', null, null, _t('favicon.ico 地址'), _t('填写ico格式图片URL地址, 在网站标题前加上一个图标'));
-    $form->addInput($faviconUrl);
     // 网站左侧栏头像
     $siteLogoUrl = new Text('siteLogoUrl', null, null, _t('左侧 LOGO 地址'), _t('填写 JPG/PNG/Webp 等图片 URL 地址, 网站左侧头像的显示 (150*150最佳)'));
     $form->addInput($siteLogoUrl);
@@ -27,7 +24,7 @@ function themeConfig($form) {
     $categoryIcon = new Text('categoryIcon', null, '🎯|🧠|🎮|📹|📊', _t('分类图标'), _t('填写自定义分类EMOJI图标，按顺序从左到右，用|分隔，留空则不显示'));
     $form->addInput($categoryIcon);
     // 网站标题配置项
-    $siteCdn = new Text('siteCdn', null, '//cdnjs.cloudflare.com/ajax/libs', _t('全站公共库CDN地址'), _t('默认CDN地址，留空则回退到主题本地 libs/ 目录，结尾斜杠可省略'));
+    $siteCdn = new Text('siteCdn', null, '//cdnjs.cloudflare.com/ajax/libs/', _t('全站公共库CDN地址'), _t('默认CDN地址，留空则回退到主题本地 libs/ 目录，结尾斜杠可省略'));
     $form->addInput($siteCdn);
     // 网站创建时间
     $siteTime = new Text('siteTime', null, date('Y-m-d H:i:s'), _t('网站创建时间'), _t('格式：YYYY-MM-DD, 用于计算网站运行时间,为空则为今天起算'));
@@ -525,6 +522,31 @@ function libUrl($path, $echo = true) {
     return $url;
 }
 
+/* *
+ * 清理 <figure>…</figure> 内部的换行符与 <br>，避免干扰图片宫格的网格布局
+ * 两阶段兼容：Markdown 解析前的原文里是 \n；content() 输出的 HTML 里 HyperDown
+ * 已把手写 HTML 块内的换行转成 <br/>，因此两者都删，套在哪一层都正确
+ * @param string $html 文章内容（原文或渲染后的 HTML 均可）
+ * @return string
+ */
+function cleanFigureBreaks($html) {
+    // 逐个 figure 块处理，非贪婪匹配支持一篇正文里的多个图集
+    return preg_replace_callback('/<figure[^>]*>.*?<\/figure>/is', function ($m) {
+        // 先删 <br> 及其两侧空白（兼容 <br> <br/> <br />），再清掉残余换行符
+        $inner = preg_replace('/\s*<br\s*\/?>\s*/i', '', $m[0]);
+        return str_replace(["\r", "\n"], '', $inner);
+    }, $html);
+}
+
+/** 
+ * 转义 HTML 实体，防止 XSS 攻击
+ * @param string $string 待转义的字符串
+ * @return string 转义后的字符串
+ */
+function escapeHtml(string $string): string {
+    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
 /**
  * 高性能 UserAgent 解析函数
  * @param string $userAgent
@@ -584,11 +606,5 @@ function parseUserAgent($userAgent) {
     return $result;
 }
 
-/** 
- * 转义 HTML 实体，防止 XSS 攻击
- * @param string $string 待转义的字符串
- * @return string 转义后的字符串
- */
-function escapeHtml(string $string): string {
-    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
+?>
+

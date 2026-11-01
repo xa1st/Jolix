@@ -22,7 +22,7 @@ $this->need('header.php');
             </div>
             <!-- 博客内容  -->
             <div class="post-content">
-                <?php $this->content(); ?>
+                <?php echo cleanFigureBreaks($this->content); ?>
                 <div class="over flex justify-center items-center mb-2 mt-8 text-gray-500/60 text-md">正文完</div>
             </div>
             <!-- 附加内容 -->

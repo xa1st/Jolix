@@ -18,15 +18,16 @@
     <meta name="robots" content="index,follow">
     <title><?php $this->archiveTitle(['category' => _t('分类 %s 下的文章'), 'search' => _t('包含关键字 %s 的文章'), 'tag' => _t('标签 %s 下的文章'), 'author' => _t('%s 发布的文章')], '', ' - '); ?><?php $this->options->title(); ?> - <?php $this->options->description(); ?></title>
     <!-- 浏览器图标 -->
-    <link rel="icon" href="<?php echo isset($this->options->faviconUrl) && $this->options->faviconUrl ? $this->options->faviconUrl : $this->options->themeUrl . '/assets/img/favicon.ico'; ?>" sizes="32x32" type="image/x-icon">
-    <link rel="icon" type="image/png" sizes="128x128" href="<?php echo $this->options->themeUrl . '/assets/img/128.png'; ?>">
-    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo $this->options->themeUrl . '/assets/img/180.png'; ?>">
+    <link rel="icon" type="image/x-icon" href="<?php $this->options->siteUrl('usr/static/favicon.ico'); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php $this->options->siteUrl('usr/static/32.png'); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php $this->options->siteUrl('usr/static/16.png'); ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php $this->options->siteUrl('usr/static/180.png'); ?>">
     <!-- 版权声明 -->
     <link rel="author" href="<?php $this->options->siteUrl('about'); ?>">
     <link rel="canonical" href="<?php $this->options->siteUrl(); ?>">
     <!-- 主题补充头部代码 -->
     <meta property="og:description" content="<?php $this->options->description(); ?>">
-    <meta property="og:image" content="<?php $this->options->themeUrl('assets/img/jolix.png'); ?>">
+    <meta property="og:image" content="<?php $this->options->siteUrl('usr/static/og.png'); ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <!-- 主题头部代码 -->

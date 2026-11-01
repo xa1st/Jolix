@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.6.0-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.6.1-orange.svg)
 
 </div>
 
@@ -70,7 +70,6 @@ Jolix 采用四段式版本号 `主版本.次版本.功能版本.修订版本`,�
 
 | 配置项 | 说明 |
 | --- | --- |
-| favicon.ico 地址 | 网站图标 URL,可填写 CDN 或本地图片地址;留空使用主题内置图标 |
 | 左侧 LOGO 地址 | 左侧栏头像(推荐 150×150) |
 | 左侧栏网站标题 | 头像下方的站名 |
 | 左侧个人描述 | 站名下的简短描述 |
@@ -181,15 +180,17 @@ Jolix/
 └── screenshot.png      # 主题截图(Typecho 后台预览用,勿改名/移动)
 ```
 
-`assets/img/` 内置图标一览:
+`usr/static/` 站点图标与分享图一览(放在 Typecho 站点根目录下,与主题无关,多主题可共用):
 
 | 文件 | 尺寸 | 用途 |
 | --- | --- | --- |
 | `favicon.ico` | 32×32 | 传统 favicon |
-| `128.png` | 128×128 | 高分屏标签栏图标 |
+| `32.png` | 32×32 | 高清 favicon |
+| `16.png` | 16×16 | 小尺寸 favicon |
 | `180.png` | 180×180 | iOS 添加到主屏幕 |
-| `192.png` / `512.png` | 192 / 512 | PWA 图标(预留,当前未启用 manifest) |
-| `jolix.png` | 1200×630 | 社交分享卡 `og:image` |
+| `og.png` | 1200×630 | 社交分享卡 `og:image` |
+
+> 主题 `assets/img/` 内置了一份同名图标(favicon.ico、32.png、16.png、180.png、og.png),可直接移动到站点根目录 `usr/static/` 下使用——站点图标属于博客本身,不应随主题的更换而改变,独立存放后换主题、升级主题都不会丢。
 
 ## 常见问题
 
@@ -197,7 +198,7 @@ Jolix/
 在 `src/theme.css` 的 `@theme` 块中修改 `--color-orange-500` / `--color-orange-600` 为任意 oklch 或 hex 颜色,重新构建即可;`:root` 与 `.dark` 中的 `--primary` 引用会自动跟随。
 
 **Q: 如何更换站点图标与分享图?**
-直接替换 `assets/img/` 下对应文件即可(favicon.ico、128.png、180.png、jolix.png)。或在后台「favicon.ico 地址」填写自定义图标 URL,该项会覆盖 `<link rel="icon">` 的默认值,但分享图 `og:image` 始终使用主题内置的 `jolix.png`。
+将对应文件放到 Typecho 站点根目录的 `usr/static/` 下即可(favicon.ico、32.png、16.png、180.png、og.png,清单见上文)。站点图标与分享图独立于主题存放,多个主题可共用一份;分享图 `og:image` 始终使用 `usr/static/og.png`。
 
 **Q: 如何关闭 CDN,使用本地资源?**
 后台主题设置将「全站公共库CDN地址」留空即可回退到主题目录下的 `libs/`(主题已内置 AOS、Fancybox、highlight.js、marked,目录结构与 CDN 保持一致)。评论头像预览使用的 md5 库为主题自带的 `assets/js/md5.min.js`,不受该设置影响。
@@ -217,7 +218,7 @@ Jolix/
 
 排列规则:1 图独占整行、2 图各占一半、3 图一行三列、4 图一行四列、5 图上二各半下三各三分之一、6 图两行三列、7 图首图独占一行下两行各三、8 图首行二各半下两行各三、9 图九宫格。同组格子等高,宽格子按更扁的比例裁切(如 5 图的首行按 2:1);移动端 1 图独占一行,2/4/6/8 图各占 50%,3/5/7/9 图首图 100%、其余各占 50%。
 
-> 注意:块级 HTML 内部的 Markdown 语法(`![]()`)不会被解析,图片必须写完整的 `<img>` 标签。
+> 注意:块级 HTML 内部的 Markdown 语法(`![]()`)不会被解析,图片必须写完整的 `<img>` 标签;`<figure>` 内部的换行符与 `<br>` 会在输出前被自动清理,不会破坏网格布局,排版时无需刻意压缩成一行。
 
 **Q: 缓存数据不更新怎么办?**
 删除主题缓存目录(默认 `usr/cache`)下以 `Jolix_` 开头的 `.cache` 文件,或把对应缓存时间改成 `0`。当前会落盘的只有归档 `Jolix_archivesList`、读者墙 `Jolix_readers{条数}`、标签页 `Jolix_tagsList`。侧栏标签云、最新评论、最近文章和友情链接每次请求直接查询。
