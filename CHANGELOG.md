@@ -1,5 +1,29 @@
 # 更新日志
 
+## 1.4.6.2
+
+### 新增
+
+- 新增 `parts/css-vars.php`：主题主色 `--primary` / `--primary-hover` 改由 header 运行时注入（`<style>` 变量），更换主色只需改一处，无需重新构建样式
+
+### 优化
+
+- 正文字体由霞鹜文楷更换为 Inter + Noto Sans SC（经 fonts.loli.net 镜像加载），并增加字体域名 preconnect 预连接
+- `src/theme.css` 重构为精简去冗余版：合并重复覆盖的样式代码，移除写死的 orange 工具色，配色统一走语义化变量
+- 侧边栏组件目录 `sider/` 更名为 `widget/`，与 `parts/`（模板片段）目录语义对齐，加载路径同步更新
+- fontello 字体图标样式由 `assets/fonts/fontello.css` 移入 `src/fontello.css`，仅构建时引用，不再输出到产物目录
+- 友情链接页改按页面模板识别（使用「友情链接」模板的页面即为数据源），不再按后台 slug 配置查找，「友情链接页 slug」配置项不再生效
+- 友链头像邮箱改用 `__TYPECHO_GRAVATAR_PREFIX__` 常量拼接 Gravatar 地址，跟随 Typecho 系统级头像前缀配置，不再调用 `\Typecho\Common::gravatarUrl()`
+- 友链卡片底色与边框由写死的 `bg-white dark:bg-black` 改用主题变量（`--bg-secondary`、`--border-color`），跟随明暗模式
+- 友链头像地址输出前不再做 HTML 实体转义，仅去除首尾空格
+- 懒加载容器选择器移除已废弃的 `.says-gallery`（说说功能由插件负责）
+- 「全站公共库CDN地址」默认值去掉结尾斜杠，与提示「结尾斜杠可省略」保持一致
+
+### 其他
+
+- 主题版本号更新至 1.4.6.2
+- 统一清理源码行尾空格等格式问题
+
 ## 1.4.6.1
 
 ### 优化

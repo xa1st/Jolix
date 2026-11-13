@@ -42,8 +42,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
         // 获取侧边栏组件
         $order = array_values(array_unique(array_intersect(array_filter(array_map('trim', explode('|', (string)$this->options->sidebarLayout))),$allow)));
         // 按需加载
-        foreach ($order as $block) $this->need('sider/' . $block . '.php');
+        foreach ($order as $block) $this->need('widget/' . $block . '.php');
     ?>
     <!-- 侧边栏组件结束 -->
 </div>
-

@@ -10,10 +10,10 @@ $this->need('header.php');
 <!-- 网页主体开始 -->
 <div class="container mx-auto px-4 py-8 pb-0 flex flex-wrap">
     <!-- 左侧菜单栏 -->
-    <?php $this->need('menu.php'); ?> 
+    <?php $this->need('menu.php'); ?>
     <!-- 中间栏 -->
     <div class="main-content page-links w-full lg:flex-1 lg:mx-6" data-aos="fade-up">
-        <div data-aos="fade-up" class="links-box">
+        <div data-aos="fade-up" class="links-box bg-(--bg-secondary) border border-(--link-border)">
             <h2 class="tit"># <?php $this->title() ?></h2>
             <?php
                 $text = explode("<!--more-->", $this->text); // 分割文本内容
@@ -30,7 +30,7 @@ $this->need('header.php');
                         $url = $link['url'] ? escapeHtml($link['url']) . "?ref={$host}" : 'javascript:void(0)';
                     ?>
                     <a data-safe href="<?php echo $url; ?>" target="_blank" title="<?php echo escapeHtml($name . ' - ' . $link['desc']); ?>" class="link-item">
-                        <img src="<?php echo escapeHtml($link['avatar']); ?>" alt="<?php echo escapeHtml($name); ?>" class="w-12 h-12 rounded-full mr-4">
+                        <img src="<?php echo trim($link['avatar']); ?>" alt="<?php echo escapeHtml($name); ?>" class="w-12 h-12 rounded-full mr-4">
                         <div class="info">
                             <div class="link-name"><?php echo escapeHtml($name); ?></div>
                             <div class="link-link"><?php echo escapeHtml($link['desc']); ?> </div>
@@ -41,7 +41,7 @@ $this->need('header.php');
         </div>
     </div>
     <!-- 右侧工具栏 -->
-    <?php $this->need('sider.php'); ?> 
+    <?php $this->need('sider.php'); ?>
 </div>
 <!-- 网页主体结束 -->
 <?php $this->need('footer.php'); ?>

@@ -25,6 +25,7 @@
     <!-- 版权声明 -->
     <link rel="author" href="<?php $this->options->siteUrl('about'); ?>">
     <link rel="canonical" href="<?php $this->options->siteUrl(); ?>">
+    <link rel="preconnect" href="https://fonts.loli.net">
     <!-- 主题补充头部代码 -->
     <meta property="og:description" content="<?php $this->options->description(); ?>">
     <meta property="og:image" content="<?php $this->options->siteUrl('usr/static/og.png'); ?>">
@@ -33,7 +34,7 @@
     <!-- 主题头部代码 -->
     <?php $this->header(); ?>
     <!-- 全局字体 -->
-    <link rel="stylesheet" href="<?php libUrl('lxgw-wenkai-screen-webfont/1.7.0/style.css'); ?>" media="print" onload="this.media='all'"/>
+    <link href="https://fonts.loli.net/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- 高亮和动画 -->
     <link rel="stylesheet" href="<?php libUrl('aos/2.3.4/aos.css'); ?>" media="print" onload="this.media='all'"/>
     <link rel="stylesheet" href="<?php libUrl('fancyapps-ui/6.0.33/fancybox/fancybox.min.css'); ?>" media="print" onload="this.media='all'"/>
@@ -41,9 +42,9 @@
     <link rel="stylesheet" href="<?php libUrl('highlight.js/11.11.0/styles/a11y-light.min.css'); ?>" media="print" onload="this.media='all'" id="hljs-light"/>
     <link rel="stylesheet" href="<?php libUrl('highlight.js/11.11.0/styles/a11y-dark.min.css'); ?>" media="print" onload="this.media='all'" disabled id="hljs-dark"/>
     <!-- 主题样式 -->
-    <link rel="stylesheet" href="<?php $this->options->themeUrl('assets/css/theme.min.css'); ?>"/>
+    <?php $this->need('parts/css-vars.php'); ?>
+    <link rel="stylesheet" href="<?php $this->options->themeUrl('assets/css/theme.min.css?ver=202611041712'); ?>"/>
     <!-- 主题自定义头部代码 -->
     <script>const savedTheme=localStorage.getItem("theme")||"auto";const currentTheme=savedTheme==="auto"?(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark auto":"light auto"):savedTheme;document.documentElement.className=currentTheme;</script>
 </head>
 <body>
-

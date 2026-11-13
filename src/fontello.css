@@ -4,7 +4,7 @@
 * @date 2025-05-16
 * @version 1.0.0
 **/
-@font-face{font-family:"fontello";src:url("./fontello.woff2") format("woff2"),url("./fontello.woff") format("woff")}
+@font-face{font-family:"fontello";src:url("../fonts/fontello.woff2") format("woff2"),url("../fonts/fontello.woff") format("woff")}
 .icon{font-family:"fontello"!important;speak:none;font-style:normal;font-weight:400;font-variant:normal;text-transform:none;line-height:1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 .icon-mail:before{content:"\f800"}
 .icon-qq:before{content:"\f801"}

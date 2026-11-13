@@ -3,10 +3,10 @@
 /**
  * ​Jolix​​中文"极简"（Jiǎn） + 拉丁语Lux（光）象征轻量化主题如光般流畅
  * ​支持响应式，基于tailwindcss4.1的简约三栏主题
- * 
+ *
  * @package Jolix
  * @author 猫东东
- * @version 1.4.6.1
+ * @version 1.4.6.2
  * @link https://github.com/xa1st/Jolix
  * @license Mulan PSL v2
  */
@@ -16,7 +16,7 @@ $this->need('header.php');
 <!-- 网页主体开始 -->
 <div class="container mx-auto px-4 py-8 pb-0 flex flex-wrap">
     <!-- 左侧菜单栏 -->
-    <?php $this->need('menu.php'); ?> 
+    <?php $this->need('menu.php'); ?>
     <!-- 中间栏 -->
     <div class="main-content page-index w-full lg:flex-1 lg:mx-6 overflow-hidden">
         <?php while ($this->next()): ?>
@@ -34,7 +34,7 @@ $this->need('header.php');
                         <span><?php $this->date(); ?></span><span class="mx-3 hidden lg:inline-flex"> / </span>
                         <?php if (class_exists('\TypechoPlugin\Views\Plugin') && method_exists('\TypechoPlugin\Views\Plugin', 'getViews')): ?>
                             <span class="hidden lg:inline-flex">
-                                <?php echo \TypechoPlugin\Views\Plugin::getViews($this->cid); ?>次阅读</span><span class="mx-3 hidden lg:inline-flex"> / 
+                                <?php echo \TypechoPlugin\Views\Plugin::getViews($this->cid); ?>次阅读</span><span class="mx-3 hidden lg:inline-flex"> /
                             </span>
                         <?php endif; ?>
                         <a class="hidden lg:inline-flex" href="<?php $this->permalink() ?>#commentbox" title="<?php $this->commentsNum('暂无评论', '1条热评', '%d条热评'); ?>"><?php $this->commentsNum('暂无评论', '1条热评', '%d条热评'); ?></a>
@@ -45,20 +45,19 @@ $this->need('header.php');
         <?php endwhile; ?>
         <!-- 分页 -->
         <div data-aos="fade-up">
-            <?php 
+            <?php
                 $this->pageNav(
-                    '<i class="icon icon-left"></i>', 
-                    '<i class="icon icon-right"></i>', 
-                    1, 
+                    '<i class="icon icon-left"></i>',
+                    '<i class="icon icon-right"></i>',
+                    1,
                     '...',  // 省略符
                     ['wrapTag' => 'div', 'wrapClass' => 'pagination', 'itemTag' => 'button', 'textTag' => 'span', 'currentClass' => 'active', 'prevClass' => 'prev-btn',  'nextClass' => 'next-btn']
-                ); 
+                );
             ?>
         </div>
     </div>
     <!-- 右侧工具栏 -->
-    <?php $this->need('sider.php'); ?> 
+    <?php $this->need('sider.php'); ?>
 </div>
 <!-- 网页主体结束 -->
 <?php $this->need('footer.php'); ?>
-

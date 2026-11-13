@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.6.1-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.6.2-orange.svg)
 
 </div>
 
@@ -30,7 +30,7 @@ Jolix 采用四段式版本号 `主版本.次版本.功能版本.修订版本`,�
 
 - 🧭 **三栏响应式布局** 左侧导航 + 中间内容 + 右侧工具栏(可选显示),移动端自适应
 - 🌗 **三态深色模式** 亮色 / 暗色 / 跟随系统,一键循环切换并持久化到 `localStorage`
-- ✍️ **霞鹜文楷** 全站字体,优雅的屏幕阅读体验
+- ✍️ **Inter + Noto Sans SC** 全站字体(经 fonts.loli.net 镜像加载),清晰的屏幕阅读体验
 - 🖼️ **图片懒加载 + 骨架屏** 自带优雅加载动画,失败自动降级
 - 🧩 **图片宫格** 正文手写 `<figure class="pg-4">` 即可让 1~9 张图按固定布局排列,同组等高裁切,支持图注,移动端独立排版(见常见问题)
 - 📸 **Fancybox 灯箱** 点击图片放大浏览,按段落/宫格自动分组相册
@@ -86,7 +86,7 @@ Jolix 采用四段式版本号 `主版本.次版本.功能版本.修订版本`,�
 | 读者墙缓存时间 | 单位秒,默认 7200(2 小时),填 `0` 不缓存 |
 | 侧边栏最近文章条数 | 默认 10 条 |
 | 侧边栏友情链接条数 | 默认 5 条,数据取自友情链接页正文 |
-| 友情链接页 slug | 默认 `links`,对应独立页面的缩略名 |
+| 友情链接页 slug | 已弃用,友链页自 1.4.6.2 起改按页面模板「友情链接」自动识别,此项不再参与查找 |
 | 归档页文章数量 | 归档页最多列出的文章数,默认 100 篇 |
 | 归档页缓存时间 | 单位秒,默认 86400(1 天),填 `0` 不缓存 |
 | 缓存保存目录 | 相对 `usr/` 的目录名,默认 `cache`,即 `usr/cache` |
@@ -108,6 +108,8 @@ Jolix 内置多种自定义页面模板,在后台 **创建页面 → 模板** �
 | 留言本 | 页面正文 + 评论框 |
 
 ### 友情链接格式
+
+新建页面选择「友情链接」模板即可,该页面会自动作为友链数据源(1.4.6.2 起改按模板识别,不再读取 slug 配置)。
 
 在 **友链页面正文** 中按行填写,每行用 `|` 分隔 6 个字段:
 
@@ -169,14 +171,15 @@ Jolix/
 ├── gbook.php           # 留言本页面模板
 ├── menu.php            # 左侧栏
 ├── sider.php           # 右侧栏(搜索、分类固定,其余模块按配置加载)
-├── sider/              # 侧边栏模块:comments、tags、readers、posts、links
+├── widget/             # 侧边栏模块:comments、tags、readers、posts、links
+├── parts/              # 模板片段:css-vars.php(主题主色 CSS 变量注入)
 ├── header.php          # 头部(图标、og 分享标签)
 ├── footer.php          # 底部(公共库脚本加载)
 ├── functions.php       # 主题功能与配置(libUrl、缓存等)
 ├── CHANGELOG.md        # 更新日志
 ├── assets/             # 构建产物:css、js、fonts、img(站点图标与分享图)
 ├── libs/               # 本地公共库:aos、fancyapps-ui、highlight.js、marked
-├── src/                # 源码:theme.css、theme.js
+├── src/                # 源码:theme.css、theme.js、fontello.css(字体图标样式)
 └── screenshot.png      # 主题截图(Typecho 后台预览用,勿改名/移动)
 ```
 
@@ -195,7 +198,7 @@ Jolix/
 ## 常见问题
 
 **Q: 如何更换主色调(橙色)?**
-在 `src/theme.css` 的 `@theme` 块中修改 `--color-orange-500` / `--color-orange-600` 为任意 oklch 或 hex 颜色,重新构建即可;`:root` 与 `.dark` 中的 `--primary` 引用会自动跟随。
+编辑 `parts/css-vars.php`,修改其中注入的 `--primary` / `--primary-hover` 两个 CSS 变量为任意 oklch 或 hex 颜色即可,无需重新构建,全站主色自动跟随。
 
 **Q: 如何更换站点图标与分享图?**
 将对应文件放到 Typecho 站点根目录的 `usr/static/` 下即可(favicon.ico、32.png、16.png、180.png、og.png,清单见上文)。站点图标与分享图独立于主题存放,多个主题可共用一份;分享图 `og:image` 始终使用 `usr/static/og.png`。
@@ -230,8 +233,8 @@ Jolix/
 ## 版权
 
 - 主题源码:© [猫东东](https://github.com/xa1st),以 **木兰宽松许可证 第2版 (Mulan PSL v2)** 开源
-- 图标库:fontello(字体图标,见 `assets/fonts/fontello.css`)
-- 字体:霞鹜文楷屏幕版(LXGW WenKai Screen)
+- 图标库:fontello(字体图标,样式见 `src/fontello.css`,构建时内联进主题样式)
+- 字体:Inter、Noto Sans SC(经 fonts.loli.net 镜像加载)
 - 前端依赖:AOS / Fancybox / highlight.js / marked,版权归各自作者所有
 
 [木兰宽松许可证 第2版](LICENSE) © 猫东东(Alex Xu)

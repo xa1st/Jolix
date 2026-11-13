@@ -17,7 +17,7 @@ class LazyLoadManager {
             this.onIntersection.bind(this), { rootMargin: this.options.rootMargin }
         );
     }
-  
+
     /**
     * 交叉观察回调
     */
@@ -37,7 +37,7 @@ class LazyLoadManager {
                     img.style.animation = "none";
                     img.style.opacity = "0.5";
                     img.setAttribute("alt", "加载失败");
-                  
+
                     const errorText = document.createElement("div");
                     errorText.textContent = "×";
                     errorText.style.cssText = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px;color:#999;pointer-events:none;`;
@@ -50,12 +50,12 @@ class LazyLoadManager {
             }
         });
     }
-  
+
     /**
     * 处理图片，将其转换为懒加载模式
     * @param {string} containerSelector - 图片容器选择器
     */
-    processImages(containerSelector = ".post-content, .says-gallery") {
+    processImages(containerSelector = ".post-content") {
         const containers = document.querySelectorAll(containerSelector);
         containers.forEach(container => {
             const images = container.querySelectorAll('img:not([data-processed])');
@@ -71,7 +71,7 @@ class LazyLoadManager {
             });
         });
     }
-  
+
     /**
     * 初始化Fancybox
     */
@@ -105,7 +105,7 @@ class LazyLoadManager {
             l10n: {CLOSE: "关闭", NEXT: "下一张", PREV: "上一张", MODAL: "您可以使用键盘导航", ERROR: "加载失败", ZOOM_IN: "放大", ZOOM_OUT: "缩小",TOGGLE_ZOOM: "切换缩放", TOGGLE_FULLSCREEN: "切换全屏"}
         });
     }
-  
+
     /**
     * 初始化懒加载
     */
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () =>{
             // 常量
             const startTime = Date.now(), startY = window.scrollY;
             // 动画定义
-            let animate = () => { 
+            let animate = () => {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / 300, 1);
                 window.scrollTo(0, startY * (1 - progress * (2 - progress)));
@@ -184,14 +184,14 @@ document.addEventListener('DOMContentLoaded', () =>{
         const searchBtn = document.getElementById("search-btn");
         // 关闭按钮
         const closeSearch = document.getElementById("close-search");
-        // 弹出搜索框 
+        // 弹出搜索框
         if (searchBtn) searchBtn.addEventListener("click", () => mobileSearch.classList.remove("hidden"));
-        // 关闭搜索框 
+        // 关闭搜索框
         if (closeSearch) closeSearch.addEventListener("click", () => mobileSearch.classList.add("hidden"));
         // 遮罩层关闭事件
         mobileSearch.addEventListener('click', e => e.target === mobileSearch && mobileSearch.classList.add('hidden'));
     }
-    
+
     // 主题切换
     const themeToggles = document.querySelectorAll(".themeToggle");
     // 定义主题循环顺序及其配置

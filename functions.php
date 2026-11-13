@@ -24,7 +24,7 @@ function themeConfig($form) {
     $categoryIcon = new Text('categoryIcon', null, '🎯|🧠|🎮|📹|📊', _t('分类图标'), _t('填写自定义分类EMOJI图标，按顺序从左到右，用|分隔，留空则不显示'));
     $form->addInput($categoryIcon);
     // 网站标题配置项
-    $siteCdn = new Text('siteCdn', null, '//cdnjs.cloudflare.com/ajax/libs/', _t('全站公共库CDN地址'), _t('默认CDN地址，留空则回退到主题本地 libs/ 目录，结尾斜杠可省略'));
+    $siteCdn = new Text('siteCdn', null, '//cdnjs.cloudflare.com/ajax/libs', _t('全站公共库CDN地址'), _t('默认CDN地址，留空则回退到主题本地 libs/ 目录，结尾斜杠可省略'));
     $form->addInput($siteCdn);
     // 网站创建时间
     $siteTime = new Text('siteTime', null, date('Y-m-d H:i:s'), _t('网站创建时间'), _t('格式：YYYY-MM-DD, 用于计算网站运行时间,为空则为今天起算'));
@@ -85,7 +85,7 @@ function getCategoryCount():int {
 }
 /**
  * 获取首页左侧社交链接
- * 
+ *
  * @return array 社交链接数组
  */
 function getSocialLinks(): array {
@@ -104,14 +104,14 @@ function getSocialLinks(): array {
                     if (count($parts) < 3 || $parts[0] === '' || $parts[1] === '') return null;
                     // 返回一个包含名称、链接和图标的数组
                     return ['name' => $parts[0], 'url' => $parts[1], 'icon' => $parts[2]];
-                }, 
+                },
                 preg_split('/\r\n|\r|\n/', $option) // 按行分割
             )
         )
     );
 }
 
-/** 
+/**
  * 获取分类图标列表
  * @return array
 */
@@ -124,11 +124,11 @@ function getCategoryIcons():array {
 
 /**
  * 获取博客文章归档
- * 
+ *
  * 该函数首先尝试从缓存中获取归档数据，如果缓存未命中或失效，则从数据库中查询最近的200篇文章，
  * 并按年份和月份进行归档整理，最后生成HTML格式的归档列表并写入缓存
  * 如果缓存命中，则直接返回缓存中的归档列表，避免重复查询数据库，提高性能
- * 
+ *
  * @return string HTML格式的归档列表
  */
 function getArchivesList():string {
@@ -223,7 +223,7 @@ function getComments():array {
 /**
  * 读者墙
  * 统计已通过的读者评论，按邮箱合并，排除站长本人，按评论数从高到低
- * 
+ *
  * @param int $limit 显示人数，小于 1 时读主题配置，默认 30
  * @return array 每项包含 author、url、avatar、count
  */
@@ -298,10 +298,10 @@ function getReaders(int $limit = 0):array {
     return $readers;
 }
 
-/** 
+/**
  * 最近文章列表，用于侧边栏显示
  * 数量是从主题配置中获取的，默认为5
- * 
+ *
  * @return array 每项包含 permalink、title、date
  */
 function getRecentPosts():array {
@@ -345,11 +345,11 @@ function getLinks(?int $limit = null): array {
     static $cache = [];
     if (isset($cache[$limit])) return $cache[$limit];
     // 获取友情链接页的 slug，默认为 links
-    $slug = Widget::widget('Widget_Options')->linksSlug ?? 'links';
+    // $slug = Widget::widget('Widget_Options')->linksSlug ?? 'links';
     // 按 slug 取页面原文，content() 会过 Markdown，这里要拿 text
     $db = \Typecho\Db::get();
     // 获取链接页面内容
-    $page = $db->fetchRow($db->select('text')->from('table.contents')->where('type = ?', 'page')->where('status = ?', 'publish')->where('slug = ?', $slug)->limit(1));
+    $page = $db->fetchRow($db->select('text')->from('table.contents')->where('type = ?', 'page')->where('status = ?', 'publish')->where('template = ?', 'links.php')->limit(1));
     // 如果页面不存在或没有正文，则返回空数组
     if (empty($page['text'])) return [];
     // 描述在 <!--more--> 之前，链接在之后
@@ -367,9 +367,10 @@ function getLinks(?int $limit = null): array {
         // 失效标记为 0 且填了存档时间时，改走 web.archive.org
         if ($item[4] === '0' && !empty($item[5])) $url = 'https://web.archive.org/web/' . trim($item[5]) . '/' . $url;
         // 头像是图片地址就直接用，否则按邮箱拼 Gravatar
-        $avatar = trim($item[3]);
+	$avatar = trim($item[3]);
         // 如果头像地址是邮箱，则用 Gravatar
-        $avatar = strpos($avatar, '//') !== false ? $avatar : \Typecho\Common::gravatarUrl($avatar, 64, 'G');
+	// $avatar = strpos($avatar, '//') !== false ? $avatar : \Typecho\Common::gravatarUrl($avatar, 64, 'G');
+	$avatar = strpos($avatar, '//') !== false ? $avatar : (__TYPECHO_GRAVATAR_PREFIX__ . $avatar . '?s=64&r=G');
         // 构造链接信息数组
         $links[] = [
             'name'   => trim($item[0]),
@@ -405,8 +406,8 @@ function commentAuthors(int $cid):array {
     return $coidAuthorMap;
 }
 
-/** 
- * 获取copyright的年份 
+/**
+ * 获取copyright的年份
  * 如果年份相同，则只显示一个年份，否则显示起止年份
  * @return string
  * */
@@ -538,15 +539,6 @@ function cleanFigureBreaks($html) {
     }, $html);
 }
 
-/** 
- * 转义 HTML 实体，防止 XSS 攻击
- * @param string $string 待转义的字符串
- * @return string 转义后的字符串
- */
-function escapeHtml(string $string): string {
-    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-}
-
 /**
  * 高性能 UserAgent 解析函数
  * @param string $userAgent
@@ -580,7 +572,7 @@ function parseUserAgent($userAgent) {
                 break;
         }
     }
-    
+
     // 浏览器检测 - 用一个正则匹配所有主流浏览器及版本
     if (preg_match('/(Edg|Edge)\/(\d+)\.|Chrome\/(\d+)\.|Firefox\/(\d+)\.|Version\/(\d+)\..*Safari|MSIE (\d+)\.|rv:(\d+)\..*Trident/i', $userAgent, $browserMatches)) {
         if (!empty($browserMatches[1]) && !empty($browserMatches[2])) {
@@ -605,6 +597,12 @@ function parseUserAgent($userAgent) {
     }
     return $result;
 }
-
+/**
+ * 转义 HTML 实体，防止 XSS 攻击
+ * @param string $string 待转义的字符串
+ * @return string 转义后的字符串
+ */
+function escapeHtml(string $string): string {
+    return htmlspecialchars($string, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
 ?>
-
