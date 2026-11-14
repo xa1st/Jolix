@@ -13,7 +13,7 @@
 ![Typecho](https://img.shields.io/badge/Typecho-%3E%3D1.2-green.svg)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4.1-blue.svg)
 ![License](https://img.shields.io/badge/License-Mulan%20PSL%20v2-blueviolet.svg)
-![Version](https://img.shields.io/badge/Version-1.4.6.2-orange.svg)
+![Version](https://img.shields.io/badge/Version-1.4.7.0-orange.svg)
 
 </div>
 
@@ -86,7 +86,7 @@ Jolix 采用四段式版本号 `主版本.次版本.功能版本.修订版本`,�
 | 读者墙缓存时间 | 单位秒,默认 7200(2 小时),填 `0` 不缓存 |
 | 侧边栏最近文章条数 | 默认 10 条 |
 | 侧边栏友情链接条数 | 默认 5 条,数据取自友情链接页正文 |
-| 友情链接页 slug | 已弃用,友链页自 1.4.6.2 起改按页面模板「友情链接」自动识别,此项不再参与查找 |
+| 友情链接页 slug | 已弃用,友链页自 1.4.7.0 起改按页面模板「友情链接」自动识别,此项不再参与查找 |
 | 归档页文章数量 | 归档页最多列出的文章数,默认 100 篇 |
 | 归档页缓存时间 | 单位秒,默认 86400(1 天),填 `0` 不缓存 |
 | 缓存保存目录 | 相对 `usr/` 的目录名,默认 `cache`,即 `usr/cache` |
@@ -109,7 +109,7 @@ Jolix 内置多种自定义页面模板,在后台 **创建页面 → 模板** �
 
 ### 友情链接格式
 
-新建页面选择「友情链接」模板即可,该页面会自动作为友链数据源(1.4.6.2 起改按模板识别,不再读取 slug 配置)。
+新建页面选择「友情链接」模板即可,该页面会自动作为友链数据源(1.4.7.0 起改按模板识别,不再读取 slug 配置)。
 
 在 **友链页面正文** 中按行填写,每行用 `|` 分隔 6 个字段:
 
